@@ -1,0 +1,57 @@
+export default defineI18nConfig(() => ({
+  legacy: false,
+  locale: 'en',
+  messages: {
+    en: {
+      dashboard: 'Dashboard',
+      pos: 'Checkout (POS)',
+      inventory: 'Inventory Catalog',
+      categories: 'Categories',
+      units: 'Units',
+      adjustments: 'Adjustments',
+      sales: 'Sales',
+      users: 'Users',
+      colors: 'Colors',
+      roles_groups: 'Roles & Groups',
+      activity_logs: 'Activity Logs',
+      search: 'Scan barcode or type code...',
+      total: 'Total',
+      pay_now: 'Complete Sale',
+      logged_in: 'Logged in as:'
+    },
+    km: {
+      dashboard: 'ផ្ទាំងគ្រប់គ្រង',
+      pos: 'គិតលុយ (POS)',
+      inventory: 'កាតាឡុកស្តុក',
+      categories: 'ប្រភេទ',
+      units: 'ខ្នាត',
+      adjustments: 'ការកែតម្រូវ',
+      sales: 'ការលក់',
+      users: 'អ្នកប្រើប្រាស់',
+      colors: 'ពណ៌',
+      roles_groups: 'តួនាទី និងក្រុម',
+      activity_logs: 'កំណត់ហេតុសកម្មភាព',
+      search: 'ស្កែនកូដ ឬវាយបញ្ចូល...',
+      total: 'សរុប',
+      pay_now: 'បញ្ជាក់ការលក់',
+      logged_in: 'ចូលគណនីជា៖'
+    },
+    zh: {
+      dashboard: '仪表板',
+      pos: '结账 (POS)',
+      inventory: '库存目录',
+      categories: '类别',
+      units: '单位',
+      adjustments: '调整',
+      sales: '销售',
+      users: '用户',
+      colors: '颜色',
+      roles_groups: '角色与权限组',
+      activity_logs: '活动日志',
+      search: '扫描条形码或输入代码...',
+      total: '总计',
+      pay_now: '完成销售',
+      logged_in: '当前登录：'
+    }
+  }
+}))
