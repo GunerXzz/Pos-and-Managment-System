@@ -17,15 +17,9 @@
     </div>
 
     <form @submit.prevent="handleRegister" class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">First Name</label>
-          <input type="text" v-model="form.first_name" required class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-themeGold transition" placeholder="John" />
-        </div>
-        <div>
-          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Last Name</label>
-          <input type="text" v-model="form.last_name" required class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-themeGold transition" placeholder="Doe" />
-        </div>
+      <div class="mb-4">
+        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+        <input type="text" v-model="form.name" required class="w-full px-4 py-2 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-themeGold transition" placeholder="John Doe" />
       </div>
 
       <div>
@@ -73,14 +67,13 @@ const router = useRouter()
 
 // Mapping directly to the bpas_users structure you provided
 const form = reactive({
-  first_name: '',
-  last_name: '',
+  name: '',
   username: '',
   email: '',
   phone: '',
   password: '',
   group_id: null, // Default: no role assigned yet
-  active: 0 // Default: pending activation
+  status_id: 0 // Default: pending activation
 })
 
 const handleRegister = async () => {

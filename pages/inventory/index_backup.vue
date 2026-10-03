@@ -54,10 +54,15 @@
                   IMG
                 </div>
               </td>
-              <td class="p-4 font-bold text-md dark:text-white">{{ product.name }}</td>
+              <td class="p-4">
+                <div class="font-bold text-md dark:text-white flex items-center gap-2">
+                  {{ product.name }}
+                  <span v-if="product.is_service" class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Service</span>
+                </div>
+              </td>
               <td class="p-4 font-mono text-sm text-gray-500 dark:text-gray-400">
                 <div>{{ product.code }}</div>
-                <div class="text-xs text-gray-400">{{ product.barcode_symbology }}</div>
+                <div class="text-xs text-gray-400">{{ mockBarcodeTypes[product.barcode_type_id]?.name }}</div>
               </td>
               <td class="p-4 text-sm text-gray-600 dark:text-gray-300">
                 <span v-if="mockCategories[product.category_id]" class="bg-gray-100 dark:bg-themeDark border border-gray-200 dark:border-gray-700 px-2 py-1 rounded text-xs">{{ mockCategories[product.category_id].name }}</span>
@@ -203,11 +208,19 @@ const mockColors = {
   4: { id: 4, name: 'Dark Red', code: '#8B0000' }
 };
 
+const mockBarcodeTypes = {
+  1: { id: 1, name: 'CODE128' },
+  2: { id: 2, name: 'EAN13' },
+  3: { id: 3, name: 'UPC-A' },
+  4: { id: 4, name: 'QR' }
+};
+
 const mockInventory = ref([
-  { id: 1, name: 'Premium Red Silk', code: 'PRD-1001', barcode_symbology: 'CODE128', category_id: 2, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 10.00, price: 15.50, stock: 45.5, alert_quantity: 10, image: 'https://placehold.co/100x100/DC143C/white?text=Silk', color_id: 1 },
-  { id: 2, name: 'Royal Gold Embroidery Thread', code: 'PRD-1002', barcode_symbology: 'EAN13', category_id: 4, unit: 3, purchase_unit: 3, sale_unit: 3, cost: 0.80, price: 1.50, stock: 50, alert_quantity: 20, image: 'https://placehold.co/100x100/FFD700/black?text=Thread', color_id: 2 },
-  { id: 3, name: 'White Lace Trim Floral', code: 'PRD-1003', barcode_symbology: 'UPC-A', category_id: 1, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 1.50, price: 2.25, stock: 8.0, alert_quantity: 15, image: 'https://placehold.co/100x100/FFFFFF/black?text=Lace', color_id: 3 },
-  { id: 4, name: 'Khmer Traditional Hol', code: 'PRD-1004', barcode_symbology: 'QR', category_id: 1, unit: 4, purchase_unit: 4, sale_unit: 4, cost: 25.00, price: 40.00, stock: 1.5, alert_quantity: 2, image: 'https://placehold.co/100x100/8B0000/white?text=Hol', color_id: 4 },
+  { id: 1, name: 'Premium Red Silk', code: 'PRD-1001', barcode_type_id: 1, category_id: 2, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 10.00, price: 15.50, stock: 45.5, alert_quantity: 10, image: 'https://placehold.co/100x100/DC143C/white?text=Silk', color_id: 1, is_service: 0 },
+  { id: 2, name: 'Royal Gold Embroidery Thread', code: 'PRD-1002', barcode_type_id: 2, category_id: 4, unit: 3, purchase_unit: 3, sale_unit: 3, cost: 0.80, price: 1.50, stock: 50, alert_quantity: 20, image: 'https://placehold.co/100x100/FFD700/black?text=Thread', color_id: 2, is_service: 0 },
+  { id: 3, name: 'White Lace Trim Floral', code: 'PRD-1003', barcode_type_id: 3, category_id: 1, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 1.50, price: 2.25, stock: 8.0, alert_quantity: 15, image: 'https://placehold.co/100x100/FFFFFF/black?text=Lace', color_id: 3, is_service: 0 },
+  { id: 4, name: 'Khmer Traditional Hol', code: 'PRD-1004', barcode_type_id: 4, category_id: 1, unit: 4, purchase_unit: 4, sale_unit: 4, cost: 25.00, price: 40.00, stock: 1.5, alert_quantity: 2, image: 'https://placehold.co/100x100/8B0000/white?text=Hol', color_id: 4, is_service: 0 },
+  { id: 5, name: 'Custom Tailoring Service', code: 'SRV-2001', barcode_type_id: 1, category_id: 1, unit: 2, purchase_unit: 2, sale_unit: 2, cost: 0.00, price: 50.00, stock: 999, alert_quantity: 0, image: 'https://placehold.co/100x100/4B0082/white?text=Tailor', color_id: null, is_service: 1 },
 ])
 
 const deleteProduct = async (product) => {

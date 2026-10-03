@@ -5,9 +5,43 @@
         <h1 class="text-3xl md:text-4xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">{{ $t('adjustments') }}</h1>
         <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Manage manual stock additions and subtractions</p>
       </div>
-      <NuxtLink to="/adjustments/add" class="w-full md:w-auto bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-md transition whitespace-nowrap text-center">
-        + Add Adjustment
-      </NuxtLink>
+      <div class="flex relative w-full md:w-auto gap-2 md:gap-4">
+        <button @click="showFilter = !showFilter" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Smart Filter">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+        </button>
+
+        <!-- Smart Filter Dropdown -->
+        <div v-if="showFilter" class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-themeDark rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 z-50 p-4 animate-fade-in">
+          <h3 class="text-sm font-bold border-b border-gray-200 dark:border-gray-800 pb-2 mb-3 text-themeGold">Smart Filter</h3>
+          <div class="space-y-3 text-left">
+            <div>
+              <label class="block text-xs font-bold text-gray-500 mb-1">Adjustment Type</label>
+              <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                <option value="">All Types</option>
+                <option value="Damage">Damage</option>
+                <option value="Loss">Loss</option>
+                <option value="Addition">Addition</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-500 mb-1">Date Range</label>
+              <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
+            <div class="pt-2">
+              <button @click="showFilter = false" class="w-full bg-themeRed text-white py-1.5 rounded text-sm font-bold hover:bg-red-800 transition">Apply Filters</button>
+            </div>
+          </div>
+        </div>
+
+        <NuxtLink to="/adjustments/add" class="w-full md:w-auto bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-md transition whitespace-nowrap text-center">
+          + Add Adjustment
+        </NuxtLink>
+      </div>
     </div>
 
     <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
@@ -64,6 +98,8 @@
 
 <script setup>
 import { ref } from 'vue'
+
+const showFilter = ref(false)
 
 const mockProducts = {
   1: { name: 'Premium Red Silk', code: 'PRD-1001' },

@@ -4,19 +4,35 @@
     <!-- LEFT -->
     <div class="flex-1 flex flex-col bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 p-4 md:p-5 print:hidden overflow-hidden min-h-[50vh] lg:min-h-0 lg:h-auto">
       
-      <!-- Search -->
+      <!-- Search and Filter -->
       <div class="flex flex-col md:flex-row gap-3 justify-between items-start md:items-center mb-4">
         <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100 uppercase tracking-wide hidden md:block">{{ $t('pos') }}</h1>
-        <div class="relative w-full md:w-80">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+        <div class="flex flex-1 md:flex-none gap-2 w-full md:w-auto">
+          <!-- Color Filter Dropdown -->
+          <select v-model="activeColorFilter" class="w-1/3 md:w-32 px-2 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-themeDark text-gray-900 dark:text-gray-100 focus:outline-none focus:border-themeRed text-sm transition">
+            <option value="">All Colors</option>
+            <option value="Red">Red</option>
+            <option value="Light Blue">Light Blue</option>
+            <option value="White">White</option>
+            <option value="Gold">Gold</option>
+            <option value="Dark Red">Dark Red</option>
+            <option value="Purple">Purple</option>
+            <option value="Royal Blue">Royal Blue</option>
+          </select>
+
+          <!-- Search Input -->
+          <div class="relative flex-1 md:w-64">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+            </div>
+            <input 
+              type="text" 
+              v-model="searchQuery"
+              :placeholder="$t('search') + ' (or scan)'" 
+              class="w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-themeDark text-gray-900 dark:text-gray-100 focus:outline-none focus:border-themeRed focus:ring-1 focus:ring-themeRed text-sm font-mono transition"
+              @keyup.enter="handleScan"
+            />
           </div>
-          <input 
-            type="text" 
-            :placeholder="$t('search')" 
-            class="w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-themeDark text-gray-900 dark:text-gray-100 focus:outline-none focus:border-themeRed focus:ring-1 focus:ring-themeRed text-sm font-mono transition"
-            @keyup.enter="handleScan"
-          />
         </div>
       </div>
 
@@ -41,19 +57,28 @@
       <div class="flex-1 min-h-0 overflow-y-auto pr-2 pb-2">
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           <button 
-            v-for="item in mockProducts" 
+            v-for="item in filteredAndSortedProducts" 
             :key="item.id"
             @click="addToCart(item)"
-            class="bg-white dark:bg-themeDark rounded-md border border-gray-200 dark:border-gray-700 hover:border-themeRed dark:hover:border-red-500 transition-colors duration-150 flex flex-col text-left group overflow-hidden h-full"
+            class="bg-white dark:bg-themeDark rounded-md border border-gray-200 dark:border-gray-700 hover:border-themeRed dark:hover:border-red-500 transition-colors duration-150 flex flex-col text-left group overflow-hidden h-full relative"
           >
+            <!-- Pin Button -->
+            <div @click.stop="togglePin(item)" class="absolute top-1 left-1 z-10 p-1.5 rounded-full backdrop-blur transition-all" :class="item.isPinned ? 'bg-themeGold text-white shadow-md' : 'bg-white/50 dark:bg-black/50 text-gray-400 hover:bg-white dark:hover:bg-gray-800 hover:text-themeGold opacity-0 group-hover:opacity-100'">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+            </div>
+
             <div class="aspect-[4/3] w-full bg-gray-100 dark:bg-themeDark overflow-hidden relative flex-shrink-0">
                <img :src="item.image" :alt="item.name" class="w-full h-full object-cover group-hover:opacity-90 transition-opacity" />
-               <div class="absolute top-1 right-1 bg-white/95 dark:bg-themeDark/95 backdrop-blur text-[10px] font-bold px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
+               <div class="absolute top-1 right-1 bg-white/95 dark:bg-themeDark/95 backdrop-blur text-[10px] font-bold px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 z-10">
                  {{ item.code }}
                </div>
             </div>
             <div class="p-2.5 flex flex-col flex-grow min-w-0">
-              <span class="font-bold text-gray-800 dark:text-gray-100 text-sm leading-snug mb-2 truncate w-full" :title="item.name">{{ item.name }}</span>
+              <span class="font-bold text-gray-800 dark:text-gray-100 text-sm leading-snug mb-1 truncate w-full" :title="item.name">{{ item.name }}</span>
+              <div class="flex items-center gap-1 mb-2">
+                <span class="w-3 h-3 rounded-full border border-gray-300 dark:border-gray-600 shadow-sm" :style="{ backgroundColor: item.colorCode }"></span>
+                <span class="text-[10px] text-gray-500 font-semibold uppercase">{{ item.colorName }}</span>
+              </div>
               <div class="mt-auto flex justify-between items-end w-full">
                 <span class="text-themeRed dark:text-red-400 font-bold text-sm">${{ item.price.toFixed(2) }}</span>
                 <span class="text-xs text-gray-500 font-medium">/ {{ item.unit }}</span>
@@ -98,7 +123,13 @@
           
           <div class="flex flex-col flex-grow justify-between min-w-0">
             <div class="flex justify-between items-start w-full">
-              <p class="font-semibold text-gray-800 dark:text-gray-200 text-sm leading-tight pr-2 truncate flex-1" :title="cartItem.name">{{ cartItem.name }}</p>
+              <div>
+                <p class="font-semibold text-gray-800 dark:text-gray-200 text-sm leading-tight pr-2 truncate" :title="cartItem.name">{{ cartItem.name }}</p>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <span class="w-2.5 h-2.5 rounded-full border border-gray-300 dark:border-gray-600" :style="{ backgroundColor: cartItem.colorCode }"></span>
+                  <span class="text-[9px] text-gray-400 font-bold uppercase">{{ cartItem.colorName }}</span>
+                </div>
+              </div>
               <div class="flex gap-1 -mt-1 -mr-1">
                 <button @click="openEditItem(cartItem)" class="text-gray-400 hover:text-themeGold transition flex-shrink-0 p-1" title="Edit Item">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -164,7 +195,7 @@
         </div>
         
         <button 
-          @click="checkout"
+          @click="openCheckoutModal"
           :disabled="cart.length === 0"
           class="w-full bg-themeRed hover:bg-red-800 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white py-3 rounded-md font-bold text-lg transition flex items-center justify-center gap-2"
         >
@@ -214,6 +245,12 @@
             <span>${{ cartTotal.toFixed(2) }}</span>
           </div>
         </div>
+
+        <!-- Store QR Code for internal scanning -->
+        <div class="text-center mt-4">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=INV-SCAN-ME" alt="QR Code" class="mx-auto w-20 h-20" />
+          <p class="text-[10px] mt-1 text-gray-500">Scan to update status</p>
+        </div>
       </div>
 
       <!-- PAGE -->
@@ -256,12 +293,89 @@
           </div>
         </div>
         
-        <div class="text-center text-xs mt-6 text-gray-500 italic">
+        <!-- Customer QR Code -->
+        <div class="text-center mt-6">
+          <p class="text-xs text-gray-500 font-bold mb-2">Show this QR code for pickup/payment</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INV-SCAN-ME" alt="Customer QR Code" class="mx-auto w-24 h-24 border-4 border-white shadow-sm rounded-lg" />
+        </div>
+
+        <div class="text-center text-xs mt-4 text-gray-500 italic">
           <p>Thank you for choosing POS Fabrics!</p>
           <p>We hope to see you again.</p>
         </div>
       </div>
 
+    </div>
+
+    <!-- Checkout Modal -->
+    <div v-if="showCheckoutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div class="bg-white dark:bg-themeDark rounded-xl shadow-2xl w-full max-w-md overflow-hidden p-5 border border-gray-200 dark:border-gray-800">
+        <h3 class="text-xl font-bold mb-4 dark:text-white border-b border-gray-200 dark:border-gray-800 pb-2">Complete Checkout</h3>
+        
+        <div class="space-y-6 mb-8">
+          <!-- Sale Status -->
+          <div>
+            <label class="block text-sm font-extrabold text-gray-700 dark:text-gray-300 mb-2">Is the customer taking the items now?</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div v-for="status in mockSaleStatuses.filter(s => s.name !== 'Cancelled')" :key="status.id" 
+                @click="checkoutForm.sale_status_id = status.id"
+                :class="checkoutForm.sale_status_id === status.id ? 'border-themeRed bg-red-50 text-themeRed dark:bg-red-900/20' : 'border-gray-200 text-gray-600 dark:border-gray-700 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'"
+                class="border-2 rounded-xl p-4 cursor-pointer transition text-center font-bold flex flex-col items-center justify-center shadow-sm">
+                <span class="text-lg">{{ status.name === 'Completed' ? 'Yes, Handed over' : 'No, Pick up later' }}</span>
+                <span class="text-xs font-normal opacity-70 mt-1">{{ status.name === 'Completed' ? '(Completed)' : '(Pending / Tailoring)' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Status -->
+          <div>
+            <label class="block text-sm font-extrabold text-gray-700 dark:text-gray-300 mb-2">How much are they paying today?</label>
+            <div class="grid grid-cols-3 gap-3">
+              <div v-for="status in mockPaymentStatuses" :key="status.id" 
+                @click="checkoutForm.payment_status_id = status.id"
+                :class="checkoutForm.payment_status_id === status.id ? 'border-themeGold bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-themeGold' : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'"
+                class="border-2 rounded-xl p-3 cursor-pointer transition text-center shadow-sm flex flex-col items-center justify-center">
+                <span class="text-xl mb-1">{{ status.name === 'Paid' ? '💵' : status.name === 'Partial' ? '🪙' : '❌' }}</span>
+                <span class="text-sm font-bold">{{ status.name === 'Paid' ? 'Full Amount' : status.name === 'Partial' ? 'Deposit' : 'Nothing Yet' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div v-if="checkoutForm.payment_status_id !== 3">
+            <label class="block text-sm font-extrabold text-gray-700 dark:text-gray-300 mb-2">How are they paying?</label>
+            <div class="grid grid-cols-3 gap-3">
+              <div v-for="method in mockPaymentMethods" :key="method.id" 
+                @click="checkoutForm.payment_method_id = method.id"
+                :class="checkoutForm.payment_method_id === method.id ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400' : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'"
+                class="border-2 rounded-xl p-3 cursor-pointer transition text-center shadow-sm flex flex-col items-center justify-center">
+                <span class="text-xl mb-1">{{ method.name === 'Cash' ? '💵' : method.name === 'Credit Card' ? '💳' : '📱' }}</span>
+                <span class="text-sm font-bold">{{ method.name }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Information -->
+          <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+            <label class="block text-sm font-extrabold text-themeRed dark:text-red-400 mb-3">Customer Information <span class="text-gray-400 font-normal text-xs">(Required if Pick up later)</span></label>
+            <div class="space-y-3">
+              <div>
+                <input type="text" v-model="checkoutForm.customer_name" placeholder="Customer Name" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-themeDark dark:text-white focus:outline-none focus:border-themeRed" />
+              </div>
+              <div>
+                <input type="tel" v-model="checkoutForm.customer_phone" placeholder="Phone Number" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-themeDark dark:text-white focus:outline-none focus:border-themeRed" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 justify-end">
+          <button @click="showCheckoutModal = false" class="px-4 py-2 text-gray-600 dark:text-gray-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition">Cancel</button>
+          <button @click="processCheckout" class="px-6 py-2 bg-themeRed hover:bg-red-800 text-white rounded font-bold transition flex items-center gap-2">
+            Confirm ${{ cartTotal.toFixed(2) }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- History -->
@@ -334,17 +448,81 @@
 <script setup>
 import { ref, computed } from 'vue'
 
+const searchQuery = ref('')
+
 const mockProducts = ref([
-  { id: 1, name: 'Premium Red Silk', price: 15.50, unit: 'm', code: '1001', image: 'https://placehold.co/400x300/DC143C/white?text=Red+Silk' },
-  { id: 2, name: 'Standard Cotton', price: 5.00, unit: 'm', code: '1002', image: 'https://placehold.co/400x300/87CEFA/white?text=Cotton' },
-  { id: 3, name: 'White Lace Trim', price: 2.25, unit: 'm', code: '1003', image: 'https://placehold.co/400x300/F5F5F5/black?text=Lace' },
-  { id: 4, name: 'Gold Embroidery Thread', price: 1.50, unit: 'roll', code: '1004', image: 'https://placehold.co/400x300/FFD700/black?text=Thread' },
-  { id: 5, name: 'Khmer Traditional Hol', price: 40.00, unit: 'kben', code: '1005', image: 'https://placehold.co/400x300/8B0000/white?text=Hol+Silk' },
-  { id: 6, name: 'Purple Chiffon', price: 8.50, unit: 'm', code: '1006', image: 'https://placehold.co/400x300/8A2BE2/white?text=Chiffon' },
-  { id: 7, name: 'Satin Ribbon Blue', price: 0.75, unit: 'roll', code: '1007', image: 'https://placehold.co/400x300/4169E1/white?text=Ribbon' },
+  { id: 1, name: 'Premium Silk', price: 15.50, unit: 'm', code: '1001', colorName: 'Red', colorCode: '#DC143C', image: 'https://placehold.co/400x300/DC143C/white?text=Red+Silk', isPinned: true },
+  { id: 2, name: 'Standard Cotton', price: 5.00, unit: 'm', code: '1002', colorName: 'Light Blue', colorCode: '#87CEFA', image: 'https://placehold.co/400x300/87CEFA/white?text=Cotton', isPinned: false },
+  { id: 3, name: 'Lace Trim', price: 2.25, unit: 'm', code: '1003', colorName: 'White', colorCode: '#FFFFFF', image: 'https://placehold.co/400x300/F5F5F5/black?text=Lace', isPinned: false },
+  { id: 4, name: 'Embroidery Thread', price: 1.50, unit: 'roll', code: '1004', colorName: 'Gold', colorCode: '#FFD700', image: 'https://placehold.co/400x300/FFD700/black?text=Thread', isPinned: false },
+  { id: 5, name: 'Traditional Hol', price: 40.00, unit: 'kben', code: '1005', colorName: 'Dark Red', colorCode: '#8B0000', image: 'https://placehold.co/400x300/8B0000/white?text=Hol+Silk', isPinned: true },
+  { id: 6, name: 'Chiffon', price: 8.50, unit: 'm', code: '1006', colorName: 'Purple', colorCode: '#8A2BE2', image: 'https://placehold.co/400x300/8A2BE2/white?text=Chiffon', isPinned: false },
+  { id: 7, name: 'Satin Ribbon', price: 0.75, unit: 'roll', code: '1007', colorName: 'Royal Blue', colorCode: '#4169E1', image: 'https://placehold.co/400x300/4169E1/white?text=Ribbon', isPinned: false },
 ])
 
+const togglePin = (item) => {
+  item.isPinned = !item.isPinned;
+}
+
+const activeColorFilter = ref('')
+
+const filteredAndSortedProducts = computed(() => {
+  let filtered = mockProducts.value;
+  
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(p => 
+      p.name.toLowerCase().includes(q) || 
+      p.code.toLowerCase().includes(q)
+    );
+  }
+
+  if (activeColorFilter.value) {
+    filtered = filtered.filter(p => p.colorName === activeColorFilter.value)
+  }
+  
+  // Sort: Pinned first, then by name
+  return [...filtered].sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return a.name.localeCompare(b.name);
+  });
+})
+
 const cart = ref([])
+
+const mockSaleStatuses = ref([
+  { id: 1, name: 'Completed' },
+  { id: 2, name: 'Pending' },
+  { id: 3, name: 'Cancelled' }
+])
+
+const mockPaymentStatuses = ref([
+  { id: 1, name: 'Paid' },
+  { id: 2, name: 'Partial' },
+  { id: 3, name: 'Unpaid' }
+])
+
+const mockPaymentMethods = ref([
+  { id: 1, name: 'Cash' },
+  { id: 2, name: 'Credit Card' },
+  { id: 3, name: 'ABA Pay' }
+])
+
+const showCheckoutModal = ref(false)
+const checkoutForm = ref({
+  sale_status_id: 1,
+  payment_status_id: 1,
+  payment_method_id: 1,
+  customer_name: '',
+  customer_phone: ''
+})
+
+const openCheckoutModal = () => {
+  if (cart.value.length === 0) return;
+  checkoutForm.value = { sale_status_id: 1, payment_status_id: 1, payment_method_id: 1, customer_name: '', customer_phone: '' }
+  showCheckoutModal.value = true
+}
 
 const salesHistory = ref([])
 const showHistory = ref(false)
@@ -400,12 +578,8 @@ const handleScan = (e) => {
   e.target.value = '' // clear input
 }
 
-const checkout = async () => {
+const processCheckout = async () => {
   const { showAlert } = useUiAlert()
-  if (cart.value.length === 0) {
-    showAlert("Cart is empty!", "Error", "error")
-    return
-  }
   
   // Save to history before clearing
   const historyItem = {
@@ -415,12 +589,23 @@ const checkout = async () => {
     total: cartTotal.value,
     subtotal: cartSubtotal.value,
     itemDiscounts: cartItemDiscounts.value,
-    globalDiscount: globalDiscount.value
+    globalDiscount: globalDiscount.value,
+    sale_status_id: checkoutForm.value.sale_status_id,
+    payment_status_id: checkoutForm.value.payment_status_id,
+    payment_method_id: checkoutForm.value.payment_method_id,
+    customer_name: checkoutForm.value.customer_name || 'Walk-in Customer',
+    customer_phone: checkoutForm.value.customer_phone || ''
   }
   salesHistory.value.unshift(historyItem)
   
-  await showAlert("Sale completed successfully!", "Success", "success")
+  showCheckoutModal.value = false
+  await showAlert("Sale completed successfully! Printing receipt...", "Success", "success")
   
+  // Trigger automatic receipt printing!
+  setTimeout(() => {
+    window.print();
+  }, 500);
+
   // Auto clear cart after sale
   cart.value = []
   globalDiscount.value = 0

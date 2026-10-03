@@ -41,6 +41,11 @@
         <span class="text-xs font-bold text-gray-500 uppercase mb-1">Cashier</span>
         <span class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ sale.created_by }}</span>
       </div>
+      <div class="bg-white dark:bg-themeDark p-4 rounded-xl shadow border border-gray-200 dark:border-gray-800 flex flex-col">
+        <span class="text-xs font-bold text-gray-500 uppercase mb-1">Customer</span>
+        <span class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ sale.customer_name || 'Walk-in Customer' }}</span>
+        <span v-if="sale.customer_phone" class="text-xs text-gray-400 mt-1">{{ sale.customer_phone }}</span>
+      </div>
     </div>
 
     <!-- Items -->
@@ -134,6 +139,8 @@ const sale = ref({
   date: '2026-09-20',
   time: '10:45 AM',
   created_by: 'Staff 1',
+  customer_name: 'Meas Roth',
+  customer_phone: '012 345 678',
   sale_status: 'Completed',
   payment_status: 'Paid',
   subtotal: 66.00,

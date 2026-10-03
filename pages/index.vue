@@ -1,5 +1,5 @@
 <script setup>
 definePageMeta({
-  redirect: '/auth/login'
+  redirect: '/'
 })
 </script>

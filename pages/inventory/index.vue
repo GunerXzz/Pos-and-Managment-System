@@ -6,7 +6,45 @@
         <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Manage fabrics, laces, and tailoring materials</p>
       </div>
       <div class="flex flex-col sm:flex-row w-full md:w-auto gap-2">
-        <input type="text" placeholder="Search product or color..." class="w-full sm:w-auto px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-themeGold dark:bg-themeDark" />
+        <div class="flex relative gap-2 w-full sm:w-auto">
+          <input type="text" placeholder="Search product or color..." class="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-themeGold dark:bg-themeDark" />
+          <button @click="showFilter = !showFilter" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Smart Filter">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+          </button>
+          
+          <!-- Smart Filter Dropdown -->
+          <div v-if="showFilter" class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-themeDark rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 z-50 p-4 animate-fade-in">
+            <h3 class="text-sm font-bold border-b border-gray-200 dark:border-gray-800 pb-2 mb-3 text-themeGold">Smart Filter</h3>
+            <div class="space-y-3 text-left">
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1">Category</label>
+                <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                  <option value="">All Categories</option>
+                  <option v-for="cat in mockCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1">Stock Status</label>
+                <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                  <option value="">All</option>
+                  <option value="low">Low Stock</option>
+                  <option value="out">Out of Stock</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-500 mb-1">Product Type</label>
+                <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                  <option value="">All Types</option>
+                  <option value="0">Physical Product</option>
+                  <option value="1">Service</option>
+                </select>
+              </div>
+              <div class="pt-2">
+                <button @click="showFilter = false" class="w-full bg-themeRed text-white py-1.5 rounded text-sm font-bold hover:bg-red-800 transition">Apply Filters</button>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- Action -->
         <div class="flex gap-2">
@@ -65,10 +103,15 @@
                   IMG
                 </div>
               </td>
-              <td class="p-4 font-bold text-md dark:text-white">{{ product.name }}</td>
+              <td class="p-4">
+                <div class="font-bold text-md dark:text-white flex items-center gap-2">
+                  {{ product.name }}
+                  <span v-if="product.is_service" class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Service</span>
+                </div>
+              </td>
               <td class="p-4 font-mono text-sm text-gray-500 dark:text-gray-400">
                 <div>{{ product.code }}</div>
-                <div class="text-xs text-gray-400">{{ product.barcode_symbology }}</div>
+                <div class="text-xs text-gray-400">{{ mockBarcodeTypes[product.barcode_type_id]?.name }}</div>
               </td>
               <td class="p-4 text-sm text-gray-600 dark:text-gray-300">
                 <span v-if="mockCategories[product.category_id]" class="bg-gray-100 dark:bg-themeDark border border-gray-200 dark:border-gray-700 px-2 py-1 rounded text-xs">{{ mockCategories[product.category_id].name }}</span>
@@ -146,6 +189,7 @@ import { ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
 
 const showQrModal = ref(false)
+const showFilter = ref(false)
 const selectedProductsToPrint = ref([])
 
 const toggleAll = (e) => {
@@ -240,11 +284,19 @@ const mockColors = {
   4: { id: 4, name: 'Dark Red', code: '#8B0000' }
 };
 
+const mockBarcodeTypes = {
+  1: { id: 1, name: 'CODE128' },
+  2: { id: 2, name: 'EAN13' },
+  3: { id: 3, name: 'UPC-A' },
+  4: { id: 4, name: 'QR' }
+};
+
 const mockInventory = ref([
-  { id: 1, name: 'Premium Red Silk', code: 'PRD-1001', barcode_symbology: 'CODE128', category_id: 2, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 10.00, price: 15.50, stock: 45.5, alert_quantity: 10, image: 'https://placehold.co/100x100/DC143C/white?text=Silk', color_id: 1 },
-  { id: 2, name: 'Royal Gold Embroidery Thread', code: 'PRD-1002', barcode_symbology: 'EAN13', category_id: 4, unit: 3, purchase_unit: 3, sale_unit: 3, cost: 0.80, price: 1.50, stock: 50, alert_quantity: 20, image: 'https://placehold.co/100x100/FFD700/black?text=Thread', color_id: 2 },
-  { id: 3, name: 'White Lace Trim Floral', code: 'PRD-1003', barcode_symbology: 'UPC-A', category_id: 1, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 1.50, price: 2.25, stock: 8.0, alert_quantity: 15, image: 'https://placehold.co/100x100/FFFFFF/black?text=Lace', color_id: 3 },
-  { id: 4, name: 'Khmer Traditional Hol', code: 'PRD-1004', barcode_symbology: 'QR', category_id: 1, unit: 4, purchase_unit: 4, sale_unit: 4, cost: 25.00, price: 40.00, stock: 1.5, alert_quantity: 2, image: 'https://placehold.co/100x100/8B0000/white?text=Hol', color_id: 4 },
+  { id: 1, name: 'Premium Red Silk', code: 'PRD-1001', barcode_type_id: 1, category_id: 2, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 10.00, price: 15.50, stock: 45.5, alert_quantity: 10, image: 'https://placehold.co/100x100/DC143C/white?text=Silk', color_id: 1, is_service: 0 },
+  { id: 2, name: 'Royal Gold Embroidery Thread', code: 'PRD-1002', barcode_type_id: 2, category_id: 4, unit: 3, purchase_unit: 3, sale_unit: 3, cost: 0.80, price: 1.50, stock: 50, alert_quantity: 20, image: 'https://placehold.co/100x100/FFD700/black?text=Thread', color_id: 2, is_service: 0 },
+  { id: 3, name: 'White Lace Trim Floral', code: 'PRD-1003', barcode_type_id: 3, category_id: 1, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 1.50, price: 2.25, stock: 8.0, alert_quantity: 15, image: 'https://placehold.co/100x100/FFFFFF/black?text=Lace', color_id: 3, is_service: 0 },
+  { id: 4, name: 'Khmer Traditional Hol', code: 'PRD-1004', barcode_type_id: 4, category_id: 1, unit: 4, purchase_unit: 4, sale_unit: 4, cost: 25.00, price: 40.00, stock: 1.5, alert_quantity: 2, image: 'https://placehold.co/100x100/8B0000/white?text=Hol', color_id: 4, is_service: 0 },
+  { id: 5, name: 'Custom Tailoring Service', code: 'SRV-2001', barcode_type_id: 1, category_id: 1, unit: 2, purchase_unit: 2, sale_unit: 2, cost: 0.00, price: 50.00, stock: 999, alert_quantity: 0, image: 'https://placehold.co/100x100/4B0082/white?text=Tailor', color_id: null, is_service: 1 },
 ])
 
 const deleteProduct = async (product) => {

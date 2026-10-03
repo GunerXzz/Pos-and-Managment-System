@@ -39,8 +39,10 @@
           <div>
             <label class="block text-sm font-bold mb-2">Type <span class="text-themeRed">*</span></label>
             <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
+              <option value="">Select Type</option>
+              <option value="Damage">Damage (Subtraction)</option>
+              <option value="Loss">Loss (Subtraction)</option>
               <option value="Addition">Addition</option>
-              <option value="Subtraction">Subtraction</option>
             </select>
           </div>
           <div>

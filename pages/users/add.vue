@@ -19,13 +19,9 @@
         
         <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2">Profile Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-bold mb-2">First Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Sok" required />
-          </div>
-          <div>
-            <label class="block text-sm font-bold mb-2">Last Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Chea" required />
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-sm font-bold mb-2">Full Name <span class="text-themeRed">*</span></label>
+            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Sok Chea" required />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Username <span class="text-themeRed">*</span></label>

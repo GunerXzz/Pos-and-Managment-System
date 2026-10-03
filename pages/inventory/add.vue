@@ -43,13 +43,15 @@
             <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. PRD-1001" required />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Barcode Symbology</label>
+            <label class="block text-sm font-bold mb-2">Barcode Type</label>
             <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="CODE128">CODE128</option>
-              <option value="EAN13">EAN13</option>
-              <option value="UPC-A">UPC-A</option>
-              <option value="QR">QR Code</option>
+              <option value="">Select Type</option>
+              <option v-for="type in mockBarcodeTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
             </select>
+          </div>
+          <div class="col-span-1 md:col-span-2 mt-2 flex items-center gap-2">
+            <input type="checkbox" id="is_service" class="w-4 h-4 text-themeRed border-gray-300 rounded focus:ring-themeRed" />
+            <label for="is_service" class="text-sm font-bold cursor-pointer">This is a Service (e.g. Tailoring)</label>
           </div>
         </div>
 
@@ -154,6 +156,13 @@ const mockColors = ref([
   { id: 2, name: 'Gold', code: '#FFD700' },
   { id: 3, name: 'White', code: '#FFFFFF' },
   { id: 4, name: 'Dark Red', code: '#8B0000' }
+])
+
+const mockBarcodeTypes = ref([
+  { id: 1, name: 'CODE128' },
+  { id: 2, name: 'EAN13' },
+  { id: 3, name: 'UPC-A' },
+  { id: 4, name: 'QR' }
 ])
 
 const selectedCategory = ref('')
