@@ -17,7 +17,8 @@ export default defineI18nConfig(() => ({
       search: 'Scan barcode or type code...',
       total: 'Total',
       pay_now: 'Complete Sale',
-      logged_in: 'Logged in as:'
+      logged_in: 'Logged in as:',
+      reports: 'Reports'
     },
     km: {
       dashboard: 'ផ្ទាំងគ្រប់គ្រង',
@@ -34,7 +35,8 @@ export default defineI18nConfig(() => ({
       search: 'ស្កែនកូដ ឬវាយបញ្ចូល...',
       total: 'សរុប',
       pay_now: 'បញ្ជាក់ការលក់',
-      logged_in: 'ចូលគណនីជា៖'
+      logged_in: 'ចូលគណនីជា៖',
+      reports: 'របាយការណ៍'
     },
     zh: {
       dashboard: '仪表板',
@@ -51,7 +53,8 @@ export default defineI18nConfig(() => ({
       search: '扫描条形码或输入代码...',
       total: '总计',
       pay_now: '完成销售',
-      logged_in: '当前登录：'
+      logged_in: '当前登录：',
+      reports: '报表'
     }
   }
 }))

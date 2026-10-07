@@ -13,7 +13,10 @@ module.exports = {
         themeDarkRed: '#3E0B11', // Very dark maroon for sidebar
         themeGold: '#B58739', // Figma gold
         themeWhite: '#F8F9FA',
-        themeDark: '#121212',
+        themeDark: '#0F1117', // Base canvas (#0F1117)
+        surfaceCanvas: '#0F1117',
+        surfaceCard: '#1A1D26',
+        surfaceInput: '#252936',
       }
     },
   },

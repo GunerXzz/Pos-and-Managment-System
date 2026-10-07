@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-themeDark text-gray-900 dark:text-gray-100">
+  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b-2 border-themeGold pb-4 gap-4">
       <div>
         <h1 class="text-3xl md:text-4xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">{{ $t('inventory') }}</h1>
@@ -7,18 +7,18 @@
       </div>
       <div class="flex flex-col sm:flex-row w-full md:w-auto gap-2">
         <div class="flex relative gap-2 w-full sm:w-auto">
-          <input type="text" placeholder="Search product or color..." class="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-themeGold dark:bg-themeDark" />
-          <button @click="showFilter = !showFilter" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Smart Filter">
+          <input type="text" placeholder="Search product or color..." class="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-themeGold bg-white dark:bg-[#252936]" />
+          <button @click="showFilter = !showFilter" class="px-4 py-2 bg-gray-100 dark:bg-[#252936] border-2 border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Smart Filter">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
           </button>
           
           <!-- Smart Filter Dropdown -->
-          <div v-if="showFilter" class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-themeDark rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 z-50 p-4 animate-fade-in">
+          <div v-if="showFilter" class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-[#1A1D26] rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 z-50 p-4 animate-fade-in">
             <h3 class="text-sm font-bold border-b border-gray-200 dark:border-gray-800 pb-2 mb-3 text-themeGold">Smart Filter</h3>
             <div class="space-y-3 text-left">
               <div>
                 <label class="block text-xs font-bold text-gray-500 mb-1">Category</label>
-                <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-[#252936] focus:outline-none">
                   <option value="">All Categories</option>
                   <option v-for="cat in mockCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                 </select>
@@ -71,10 +71,10 @@
       </div>
     </div>
 
-    <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
+    <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
       <div class="overflow-x-auto h-full">
         <table class="w-full text-left border-collapse whitespace-nowrap">
-          <thead class="bg-white dark:bg-themeDark text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
+          <thead class="bg-white dark:bg-[#1A1D26] text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
             <tr>
               <th class="p-4 w-10">
                 <input type="checkbox" @change="toggleAll" :checked="selectedProductsToPrint.length === mockInventory.length && mockInventory.length > 0" class="w-4 h-4 rounded text-themeRed border-gray-300 focus:ring-themeRed" />
@@ -91,6 +91,17 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="mockInventory.length === 0">
+              <td colspan="10" class="p-10 text-center text-gray-400">
+                <div class="flex flex-col items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                  <p class="font-bold text-sm text-gray-500">No products found in inventory</p>
+                  <p class="text-xs text-gray-400 mt-1">Click "+ Add Product" to add fabrics, threads, or custom services</p>
+                </div>
+              </td>
+            </tr>
             <tr v-for="product in mockInventory" :key="product.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition" :class="{'bg-red-50/50 dark:bg-red-900/20': selectedProductsToPrint.some(p => p.id === product.id)}">
               <td class="p-4">
                 <input type="checkbox" :value="product" v-model="selectedProductsToPrint" class="w-4 h-4 rounded text-themeRed border-gray-300 focus:ring-themeRed" />
@@ -114,35 +125,51 @@
                 <div class="text-xs text-gray-400">{{ mockBarcodeTypes[product.barcode_type_id]?.name }}</div>
               </td>
               <td class="p-4 text-sm text-gray-600 dark:text-gray-300">
-                <span v-if="mockCategories[product.category_id]" class="bg-gray-100 dark:bg-themeDark border border-gray-200 dark:border-gray-700 px-2 py-1 rounded text-xs">{{ mockCategories[product.category_id].name }}</span>
+                <span class="bg-gray-100 dark:bg-[#252936] border border-gray-200 dark:border-gray-700 px-2 py-1 rounded text-xs">
+                  {{ mockCategories[product.category_id]?.name || 'Fabrics' }}
+                </span>
               </td>
               <td class="p-4">
-                <div v-if="mockColors[product.color_id]" class="flex items-center gap-2">
-                  <span class="w-4 h-4 rounded-full border border-gray-300" :style="{ backgroundColor: mockColors[product.color_id].code }"></span>
-                  <span class="text-xs font-semibold">{{ mockColors[product.color_id].name }}</span>
+                <div class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600" :style="{ backgroundColor: mockColors[product.color_id]?.code || product.colorCode || '#ccc' }"></span>
+                  <span class="text-xs font-semibold">{{ mockColors[product.color_id]?.name || product.colorName || 'Standard' }}</span>
                 </div>
               </td>
               <td class="p-4 font-semibold text-gray-600 dark:text-gray-400">
-                ${{ product.cost.toFixed(2) }}<br/>
-                <span class="text-xs text-gray-400">Per {{ mockUnits[product.purchase_unit]?.name || mockUnits[product.unit]?.name }}</span>
+                ${{ (product.cost || 0).toFixed(2) }}<br/>
+                <span class="text-xs text-gray-400">Per {{ mockUnits[product.purchase_unit]?.name || product.unit }}</span>
               </td>
               <td class="p-4 font-bold text-themeRed dark:text-red-400">
                 ${{ product.price.toFixed(2) }}<br/>
-                <span class="text-xs text-gray-400">Per {{ mockUnits[product.sale_unit]?.name }}</span>
+                <span class="text-xs text-gray-400">Per {{ mockUnits[product.sale_unit]?.name || product.unit }}</span>
               </td>
               <td class="p-4">
                 <div class="flex flex-col">
                   <span :class="product.stock <= product.alert_quantity ? 'text-themeRed font-bold' : 'text-themeGold dark:text-gray-300 font-bold'">
-                    {{ product.stock }} {{ mockUnits[product.sale_unit]?.code }}
+                    {{ product.stock }} {{ mockUnits[product.sale_unit]?.code || product.unit }}
                   </span>
                   <span v-if="product.stock <= product.alert_quantity" class="text-xs text-themeRed animate-pulse">Alert: &le; {{ product.alert_quantity }}</span>
                 </div>
               </td>
               <td class="p-4 text-right">
-                <button @click="openQrModal(product)" class="text-themeGold hover:text-yellow-600 mr-3 text-sm font-bold uppercase transition">Print QR</button>
-                <NuxtLink to="/inventory/detail" class="text-themeGold hover:text-yellow-600 mr-3 text-sm font-bold uppercase transition">View</NuxtLink>
-                <NuxtLink to="/inventory/edit" class="text-themeGold hover:text-yellow-600 mr-3 text-sm font-bold uppercase transition">Edit</NuxtLink>
-                <button @click="deleteProduct(product)" class="text-themeRed hover:text-red-800 text-sm font-bold uppercase transition">Delete</button>
+                <div class="flex items-center justify-end gap-1.5">
+                  <button @click="openQrModal(product)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/20 border border-yellow-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider" title="Print QR Code">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+                    QR
+                  </button>
+                  <NuxtLink to="/inventory/detail" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider" title="View Details">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    View
+                  </NuxtLink>
+                  <NuxtLink to="/inventory/edit" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider" title="Edit Product">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Edit
+                  </NuxtLink>
+                  <button @click="deleteProduct(product)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider" title="Delete Product">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -291,13 +318,8 @@ const mockBarcodeTypes = {
   4: { id: 4, name: 'QR' }
 };
 
-const mockInventory = ref([
-  { id: 1, name: 'Premium Red Silk', code: 'PRD-1001', barcode_type_id: 1, category_id: 2, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 10.00, price: 15.50, stock: 45.5, alert_quantity: 10, image: 'https://placehold.co/100x100/DC143C/white?text=Silk', color_id: 1, is_service: 0 },
-  { id: 2, name: 'Royal Gold Embroidery Thread', code: 'PRD-1002', barcode_type_id: 2, category_id: 4, unit: 3, purchase_unit: 3, sale_unit: 3, cost: 0.80, price: 1.50, stock: 50, alert_quantity: 20, image: 'https://placehold.co/100x100/FFD700/black?text=Thread', color_id: 2, is_service: 0 },
-  { id: 3, name: 'White Lace Trim Floral', code: 'PRD-1003', barcode_type_id: 3, category_id: 1, unit: 1, purchase_unit: 1, sale_unit: 1, cost: 1.50, price: 2.25, stock: 8.0, alert_quantity: 15, image: 'https://placehold.co/100x100/FFFFFF/black?text=Lace', color_id: 3, is_service: 0 },
-  { id: 4, name: 'Khmer Traditional Hol', code: 'PRD-1004', barcode_type_id: 4, category_id: 1, unit: 4, purchase_unit: 4, sale_unit: 4, cost: 25.00, price: 40.00, stock: 1.5, alert_quantity: 2, image: 'https://placehold.co/100x100/8B0000/white?text=Hol', color_id: 4, is_service: 0 },
-  { id: 5, name: 'Custom Tailoring Service', code: 'SRV-2001', barcode_type_id: 1, category_id: 1, unit: 2, purchase_unit: 2, sale_unit: 2, cost: 0.00, price: 50.00, stock: 999, alert_quantity: 0, image: 'https://placehold.co/100x100/4B0082/white?text=Tailor', color_id: null, is_service: 1 },
-])
+const { products } = usePosState()
+const mockInventory = products
 
 const deleteProduct = async (product) => {
   const { showConfirm } = useUiAlert()

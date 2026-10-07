@@ -26,12 +26,12 @@
         </div>
         <div class="relative z-10">
           <h3 class="text-white/80 text-sm font-bold uppercase tracking-wider mb-2">Today's Sales</h3>
-          <p class="text-3xl font-extrabold mb-1">$2,486.50</p>
+          <p class="text-3xl font-extrabold mb-1">${{ todaySalesTotal.toFixed(2) }}</p>
           <div class="flex items-center gap-1 text-xs text-themeGold font-bold">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            <span>+12% vs yesterday</span>
+            <span>Live POS Volume</span>
           </div>
         </div>
       </NuxtLink>
@@ -40,12 +40,12 @@
       <NuxtLink to="/sales" class="bg-white dark:bg-themeDark p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-between group block hover:shadow-lg hover:border-themeGold hover:-translate-y-1 transition-all duration-300 cursor-pointer">
         <div>
           <h3 class="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wider mb-2 group-hover:text-themeGold transition-colors">Total Profit</h3>
-          <p class="text-3xl font-extrabold text-gray-800 dark:text-white mb-1">$845.20</p>
+          <p class="text-3xl font-extrabold text-gray-800 dark:text-white mb-1">${{ (todaySalesTotal * 0.35).toFixed(2) }}</p>
           <div class="flex items-center gap-1 text-xs text-themeGold font-bold">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            <span>+15% vs yesterday</span>
+            <span>Estimated margin</span>
           </div>
         </div>
         <div class="bg-themeGold/20 p-3 rounded-lg text-themeGold group-hover:bg-themeGold group-hover:text-white transition-colors">
@@ -59,12 +59,12 @@
       <NuxtLink to="/sales" class="bg-white dark:bg-themeDark p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-between group block hover:shadow-lg hover:border-themeGold hover:-translate-y-1 transition-all duration-300 cursor-pointer">
         <div>
           <h3 class="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wider mb-2 group-hover:text-themeGold transition-colors">Total Invoices</h3>
-          <p class="text-3xl font-extrabold text-gray-800 dark:text-white mb-1">48</p>
+          <p class="text-3xl font-extrabold text-gray-800 dark:text-white mb-1">{{ totalInvoicesCount }}</p>
           <div class="flex items-center gap-1 text-xs text-themeGold font-bold">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            <span>+8% vs yesterday</span>
+            <span>Completed orders</span>
           </div>
         </div>
         <div class="bg-themeGold/20 p-3 rounded-lg text-themeGold group-hover:bg-themeGold group-hover:text-white transition-colors">
@@ -78,12 +78,12 @@
       <NuxtLink to="/inventory" class="bg-white dark:bg-themeDark p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-between group block hover:shadow-lg hover:border-themeGold hover:-translate-y-1 transition-all duration-300 cursor-pointer">
         <div>
           <h3 class="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wider mb-2 group-hover:text-themeGold transition-colors">Total Products</h3>
-          <p class="text-3xl font-extrabold text-gray-800 dark:text-white mb-1">128</p>
+          <p class="text-3xl font-extrabold text-gray-800 dark:text-white mb-1">{{ totalProductsCount }}</p>
           <div class="flex items-center gap-1 text-xs text-themeGold font-bold">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            <span>+5% vs yesterday</span>
+            <span>Active SKU catalog</span>
           </div>
         </div>
         <div class="bg-themeGold/20 p-3 rounded-lg text-themeGold group-hover:bg-themeGold group-hover:text-white transition-colors">
@@ -124,7 +124,14 @@
           <span class="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-bold">{{ lowStockProducts.length }} Items</span>
         </div>
         
-        <div class="flex-grow overflow-y-auto space-y-4 pr-2">
+        <div v-if="lowStockProducts.length === 0" class="flex-grow flex flex-col items-center justify-center p-6 text-center text-gray-400 dark:text-gray-500">
+          <svg class="w-10 h-10 mb-2 text-emerald-500 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p class="text-sm font-semibold">All stock levels are optimal</p>
+          <p class="text-xs text-gray-400 mt-1">No products below alert threshold</p>
+        </div>
+        <div v-else class="flex-grow overflow-y-auto space-y-4 pr-2">
           <div v-for="item in lowStockProducts" :key="item.id" class="flex justify-between items-center p-3 border border-red-100 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/10 rounded-lg">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center text-lg">
@@ -152,7 +159,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { usePosState } from '~/composables/usePosState'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -180,11 +188,14 @@ ChartJS.register(
 
 const currentDate = ref(new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))
 
-const lowStockProducts = ref([
-  { id: 1, name: 'Premium Red Silk', code: 'PRD-1001', stock: 5, alert_quantity: 10, unit: 'm' },
-  { id: 2, name: 'White Lace Trim', code: 'PRD-1003', stock: 2, alert_quantity: 5, unit: 'm' },
-  { id: 3, name: 'Gold Embroidery Thread', code: 'PRD-1004', stock: 0, alert_quantity: 5, unit: 'roll' },
-])
+const { products, sales } = usePosState()
+
+const todaySalesTotal = computed(() => {
+  return sales.value.reduce((sum, s) => sum + (Number(s.total_amount) || 0), 0)
+})
+const totalInvoicesCount = computed(() => sales.value.length)
+const totalProductsCount = computed(() => products.value.length)
+const lowStockProducts = computed(() => products.value.filter(p => Number(p.stock) <= Number(p.alert_quantity || 5)))
 
 // Professional Chart.js Data
 const chartData = ref({
@@ -210,7 +221,7 @@ const chartData = ref({
       pointHoverRadius: 6,
       fill: true,
       tension: 0.4,
-      data: [1200, 3500, 5600, 4000, 7000, 6000, 9500]
+      data: [0, 0, 0, 0, 0, 0, 0]
     },
     {
       label: 'Last Week',
@@ -225,7 +236,7 @@ const chartData = ref({
       pointHoverRadius: 6,
       fill: false,
       tension: 0.4,
-      data: [1000, 3000, 4500, 3500, 6000, 5500, 8000]
+      data: [0, 0, 0, 0, 0, 0, 0]
     }
   ]
 })

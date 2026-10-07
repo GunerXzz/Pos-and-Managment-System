@@ -1,8 +1,14 @@
 @import "tailwindcss/index.css";
 @config "../../tailwind.config.js";
 
+:root {
+  --surface-canvas: #0F1117;
+  --surface-card: #1A1D26;
+  --surface-input: #252936;
+}
+
 @layer base {
   body {
-    @apply bg-themeWhite dark:bg-themeDark text-gray-900 dark:text-gray-100 transition-colors duration-300;
+    @apply bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100 transition-colors duration-300;
   }
 }

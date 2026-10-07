@@ -59,6 +59,17 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="mockAdjustments.length === 0">
+              <td colspan="7" class="p-10 text-center text-gray-400">
+                <div class="flex flex-col items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                  <p class="font-bold text-sm text-gray-500">No inventory adjustments recorded</p>
+                  <p class="text-xs text-gray-400 mt-1">Manual stock addition or subtraction events will appear here</p>
+                </div>
+              </td>
+            </tr>
             <tr v-for="adj in mockAdjustments" :key="adj.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
               <td class="p-3 md:p-4 text-sm text-gray-600 dark:text-gray-300 font-semibold">{{ adj.date }}</td>
               <td class="p-3 md:p-4 font-mono font-bold text-themeRed dark:text-red-400">{{ adj.reference_no }}</td>
@@ -111,11 +122,9 @@ const mockUsers = {
   2: { name: 'Jane Smith' }
 };
 
-// ERD matches: bpas_adjustments
-const mockAdjustments = ref([
-  { id: 1, date: '2026-09-19', reference_no: 'ADJ-001', created_by: 1, product_id: 1, quantity: 15.0, type: 'Addition', note: 'New silk roll shipment' },
-  { id: 2, date: '2026-09-20', reference_no: 'ADJ-002', created_by: 2, product_id: 2, quantity: 5.0, type: 'Subtraction', note: 'Damaged cotton fabric' },
-])
+// Cleaned: Adjustments list is initially empty.
+// Add adjustments via /adjustments/add or populate this array.
+const mockAdjustments = ref([])
 
 const deleteAdjustment = async (adj) => {
   const { showConfirm } = useUiAlert()

@@ -63,6 +63,11 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+            <tr v-if="mockLogs.length === 0">
+              <td colspan="4" class="p-8 text-center text-gray-400 dark:text-gray-500 text-sm">
+                No activity logs recorded yet.
+              </td>
+            </tr>
             <tr v-for="log in mockLogs" :key="log.id" class="hover:bg-gray-50/50 dark:hover:bg-gray-900/50 transition duration-150">
               <td class="py-4 px-6 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ log.created_at }}</td>
               <td class="py-4 px-6 font-medium text-gray-900 dark:text-white flex items-center gap-2">
@@ -83,11 +88,11 @@
       </div>
       
       <!-- Pagination -->
-      <div class="py-4 px-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-        <div>Showing 1 to 5 of 142 logs</div>
+      <div v-if="mockLogs.length > 0" class="py-4 px-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+        <div>Showing 1 to {{ mockLogs.length }} of {{ mockLogs.length }} logs</div>
         <div class="flex gap-2">
           <button class="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 transition" disabled>Previous</button>
-          <button class="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">Next</button>
+          <button class="px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition" disabled>Next</button>
         </div>
       </div>
     </div>
@@ -104,13 +109,7 @@ useHead({
   title: 'Activity Logs - BPAS POS'
 })
 
-const mockLogs = ref([
-  { id: 1, user_id: 1, user_name: 'Admin', action: 'LOGIN', description: 'User successfully logged in', created_at: '2026-09-28 08:00 AM' },
-  { id: 2, user_id: 2, user_name: 'Manager', action: 'CREATE_PRODUCT', description: 'Created product: Khmer Traditional Hol', created_at: '2026-09-28 08:45 AM' },
-  { id: 3, user_id: 2, user_name: 'Manager', action: 'DELETE_PRODUCT', description: 'Deleted product: Thread', created_at: '2026-09-28 09:12 AM' },
-  { id: 4, user_id: 3, user_name: 'Staff 1', action: 'SALE_COMPLETED', description: 'Completed Sale INV-260920-001 (Total: $61.00)', created_at: '2026-09-28 10:45 AM' },
-  { id: 5, user_id: 3, user_name: 'Staff 1', action: 'LOGOUT', description: 'User manually logged out', created_at: '2026-09-28 05:00 PM' },
-])
+const mockLogs = ref([])
 
 const getActionBadgeClass = (action) => {
   switch (action) {

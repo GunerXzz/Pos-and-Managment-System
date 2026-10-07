@@ -1,16 +1,16 @@
 <template>
   <div
-    class="h-screen w-screen print:h-auto print:w-auto flex print:block bg-themeWhite dark:bg-themeDark text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 overflow-hidden print:overflow-visible relative"
+    class="h-screen w-screen print:h-auto print:w-auto flex print:block bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 overflow-hidden print:overflow-visible relative"
   >
     <AppSidebar v-model:isOpen="isSidebarOpen" />
 
     <!-- MAIN -->
     <main
-      class="flex-grow flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950 print:block print:overflow-visible"
+      class="flex-grow flex flex-col min-w-0 bg-gray-50 dark:bg-[#0F1117] print:block print:overflow-visible"
     >
       <!-- TOP -->
       <header
-        class="relative z-50 h-16 bg-white dark:bg-themeDark border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 md:px-6 shadow-sm flex-shrink-0 print:hidden"
+        class="relative z-50 h-16 bg-white dark:bg-[#1A1D26] border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 md:px-6 shadow-sm flex-shrink-0 print:hidden"
       >
         <div class="flex items-center gap-4">
 
@@ -18,7 +18,7 @@
           <button
             type="button"
             @click="isSidebarOpen = true"
-            class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+            class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-[#252936]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@
           <select
             :value="locale"
             @change="changeLocale"
-            class="bg-gray-100 dark:bg-themeDark border-none text-sm font-bold rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-themeGold cursor-pointer"
+            class="bg-gray-100 dark:bg-[#252936] text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 text-sm font-bold rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-themeGold cursor-pointer"
           >
             <option value="en">🇬🇧 EN</option>
             <option value="km">🇰🇭 KM</option>
@@ -64,7 +64,7 @@
           <button
             type="button"
             @click.stop="toggleColorMode"
-            class="relative z-50 p-2 rounded-lg bg-gray-100 dark:bg-themeDark hover:bg-gray-200 dark:hover:bg-gray-700 transition w-10 h-10 flex items-center justify-center text-lg cursor-pointer"
+            class="relative z-50 p-2 rounded-lg bg-gray-100 dark:bg-[#252936] border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition w-10 h-10 flex items-center justify-center text-lg cursor-pointer"
             aria-label="Toggle dark mode"
           >
             <span v-if="colorMode.preference === 'dark'">

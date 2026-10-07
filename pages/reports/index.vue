@@ -152,11 +152,7 @@ const mockUsers = {
   2: { id: 2, name: 'Manager Seng' }
 }
 
-const mockReports = ref([
-  { id: 101, type_id: 1, generated_by: 1, file_path: '/exports/sales_2026_10.xlsx', generated_at: '2026-10-03T08:30:00Z' },
-  { id: 102, type_id: 2, generated_by: 2, file_path: '/exports/inventory_2026_10.xlsx', generated_at: '2026-10-02T15:45:00Z' },
-  { id: 103, type_id: 1, generated_by: 1, file_path: '/exports/sales_2026_09.xlsx', generated_at: '2026-09-30T23:59:00Z' },
-])
+const mockReports = ref([])
 
 const getReportTypeName = (typeId) => mockReportTypes[typeId]?.name || 'Unknown Report'
 const getUserName = (userId) => mockUsers[userId]?.name || 'Unknown User'

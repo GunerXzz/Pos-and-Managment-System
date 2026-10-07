@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-themeDark text-gray-900 dark:text-gray-100">
+  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b-2 border-themeGold pb-4 gap-4">
       <div>
         <h1 class="text-3xl font-bold dark:text-white">{{ $t('colors') }}</h1>
@@ -8,10 +8,10 @@
       <NuxtLink to="/colors/add" class="w-full md:w-auto bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-md transition border border-red-900 whitespace-nowrap text-center">+ Add Color</NuxtLink>
     </div>
 
-    <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
+    <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
       <div class="overflow-x-auto h-full">
         <table class="w-full text-left border-collapse whitespace-nowrap">
-          <thead class="bg-white dark:bg-themeDark text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
+          <thead class="bg-white dark:bg-[#1A1D26] text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
             <tr>
               <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs w-24">ID</th>
               <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Color Swatch</th>
@@ -21,16 +21,35 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="mockColors.length === 0">
+              <td colspan="5" class="p-8 text-center text-gray-400">
+                <div class="flex flex-col items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                  </svg>
+                  <p class="font-bold text-sm text-gray-500">No fabric colors found</p>
+                  <p class="text-xs text-gray-400 mt-1">Click "+ Add Color" to register color swatches and hex codes</p>
+                </div>
+              </td>
+            </tr>
             <tr v-for="color in mockColors" :key="color.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
               <td class="p-3 md:p-4 font-mono text-sm text-gray-500">#{{ color.id }}</td>
               <td class="p-3 md:p-4">
-                <div class="w-8 h-8 rounded-full border border-gray-300 shadow-sm" :style="{ backgroundColor: color.code }"></div>
+                <div class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 shadow-sm" :style="{ backgroundColor: color.code }"></div>
               </td>
               <td class="p-3 md:p-4 font-bold text-gray-800 dark:text-gray-100">{{ color.name }}</td>
               <td class="p-3 md:p-4 font-mono text-sm text-gray-600 dark:text-gray-400">{{ color.code }}</td>
               <td class="p-3 md:p-4 text-right">
-                <NuxtLink to="/colors/edit" class="text-themeGold hover:text-yellow-600 hover:underline mr-4 text-sm font-semibold uppercase">Edit</NuxtLink>
-                <button class="text-red-600 hover:text-red-800 hover:underline text-sm font-semibold uppercase">Delete</button>
+                <div class="flex items-center justify-end gap-2">
+                  <NuxtLink to="/colors/edit" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Edit
+                  </NuxtLink>
+                  <button @click="deleteColor(color)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -43,11 +62,15 @@
 <script setup>
 import { ref } from 'vue'
 
-// ERD matches: bpas_colors
-const mockColors = ref([
-  { id: 1, name: 'Red', code: '#FF0000' },
-  { id: 2, name: 'Blue', code: '#0000FF' },
-  { id: 3, name: 'Gold', code: '#FFD700' },
-  { id: 4, name: 'Black', code: '#000000' },
-])
+// Cleaned: Colors list is initially empty.
+// Add new colors via /colors/add or populate this array.
+const mockColors = ref([])
+
+const deleteColor = async (color) => {
+  const { showConfirm } = useUiAlert()
+  const result = await showConfirm(`Are you sure you want to delete color ${color.name}?`, "Delete Color")
+  if (result.isConfirmed) {
+    mockColors.value = mockColors.value.filter(c => c.id !== color.id)
+  }
+}
 </script>

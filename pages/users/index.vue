@@ -55,6 +55,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="mockUsers.length === 0">
+              <td colspan="6" class="p-8 text-center text-gray-400 dark:text-gray-500 text-sm">
+                No users found. Click "+ Add User" to create a user account.
+              </td>
+            </tr>
             <tr v-for="user in mockUsers" :key="user.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
               <td class="p-3 md:p-4 font-bold text-gray-800 dark:text-gray-100">{{ user.name }}</td>
               <td class="p-3 md:p-4 font-mono text-sm text-gray-600 dark:text-gray-400">@{{ user.username }}</td>
@@ -95,9 +100,7 @@ const mockGroups = {
 
 // ERD matches: bpas_users and bpas_user_profiles
 const mockUsers = ref([
-  { id: 1, group_id: 1, name: 'Admin User', username: 'admin', email: 'admin@fabricshop.com', phone: '+855 12 345 678', status_id: 1 },
-  { id: 2, group_id: 2, name: 'Sok Chea', username: 'sokchea', email: 'cashier1@fabricshop.com', phone: '+855 98 765 432', status_id: 1 },
-  { id: 3, group_id: 2, name: 'Chan Dara', username: 'chandara', email: 'cashier2@fabricshop.com', phone: '+855 11 222 333', status_id: 0 },
+  { id: 1, group_id: 1, name: 'Admin User', username: 'admin', email: 'admin@fabricshop.com', phone: '+855 12 345 678', status_id: 1 }
 ])
 
 </script>
