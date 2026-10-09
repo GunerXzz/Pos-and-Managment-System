@@ -20,23 +20,43 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Category Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Silk" required />
+            <input 
+              v-model="categoryName" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              placeholder="e.g. Silk" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Category Code <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. CAT-SLK" required />
+            <input 
+              v-model="categoryCode" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark uppercase" 
+              placeholder="e.g. CAT-SLK" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Parent Category</label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="">None (Top Level)</option>
-              <option value="1">Silk</option>
-              <option value="3">Cotton</option>
+            <select 
+              v-model="parentId" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark"
+            >
+              <option :value="null">None (Top Level)</option>
+              <option v-for="cat in availableParentCategories" :key="cat.id" :value="cat.id">
+                {{ cat.name }} ({{ cat.code }})
+              </option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Status <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
+            <select 
+              v-model="status" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
@@ -47,7 +67,7 @@
           <NuxtLink to="/categories" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Category
           </button>
         </div>
@@ -58,9 +78,36 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
+
 const router = useRouter()
+const { categories, addCategory } = usePosState()
+const { showAlert } = useUiAlert()
+
+const categoryName = ref('')
+const categoryCode = ref('')
+const parentId = ref(null)
+const status = ref('Active')
+
+const availableParentCategories = computed(() => {
+  return categories.value.filter(c => !c.parent_id)
+})
+
 const submitForm = () => {
+  if (!categoryName.value || !categoryCode.value) return
+
+  const newCategory = {
+    id: Date.now(),
+    name: categoryName.value.trim(),
+    code: categoryCode.value.trim().toUpperCase(),
+    parent_id: parentId.value ? Number(parentId.value) : null,
+    status: status.value
+  }
+
+  addCategory(newCategory)
+  showAlert("Category created successfully!", "Success", "success")
   router.push('/categories')
 }
 </script>

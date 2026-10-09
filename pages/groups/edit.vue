@@ -8,8 +8,8 @@
           </svg>
         </NuxtLink>
         <div>
-          <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Edit Role / Group</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify existing access role</p>
+          <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Edit Group / Role</h1>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify role {{ form.name }}</p>
         </div>
       </div>
     </div>
@@ -17,29 +17,41 @@
     <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-6 md:p-8 max-w-3xl">
       <form @submit.prevent="submitForm" class="space-y-6">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-bold mb-2">Group Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="Cashier" required />
-          </div>
-          <div>
-            <label class="block text-sm font-bold mb-2">Status <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="1" selected>Active</option>
-              <option value="0">Inactive</option>
-            </select>
-          </div>
-          <div class="md:col-span-2">
-            <label class="block text-sm font-bold mb-2">Description</label>
-            <textarea class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark h-24">Handles front-desk sales</textarea>
-          </div>
+        <div>
+          <label class="block text-sm font-bold mb-2">Group Name <span class="text-themeRed">*</span></label>
+          <input 
+            v-model="form.name" 
+            type="text" 
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+            required 
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold mb-2">Description</label>
+          <textarea 
+            v-model="form.description" 
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark h-24" 
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold mb-2">Status <span class="text-themeRed">*</span></label>
+          <select 
+            v-model="form.status" 
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+            required
+          >
+            <option :value="1">Active</option>
+            <option :value="0">Inactive</option>
+          </select>
         </div>
 
         <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
           <NuxtLink to="/groups" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Changes
           </button>
         </div>
@@ -50,9 +62,44 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
+
 const router = useRouter()
+const route = useRoute()
+const { groups, updateGroup } = usePosState()
+const { showAlert } = useUiAlert()
+
+const groupId = computed(() => Number(route.query.id))
+
+const form = ref({
+  name: '',
+  description: '',
+  status: 1
+})
+
+onMounted(() => {
+  const g = groups.value.find(group => group.id === groupId.value)
+  if (g) {
+    form.value = {
+      name: g.name,
+      description: g.description,
+      status: g.status
+    }
+  }
+})
+
 const submitForm = () => {
+  if (!form.value.name) return
+
+  updateGroup(groupId.value, {
+    name: form.value.name.trim(),
+    description: form.value.description.trim(),
+    status: Number(form.value.status)
+  })
+
+  showAlert(`Role "${form.value.name}" updated successfully!`, "Updated", "success")
   router.push('/groups')
 }
 </script>

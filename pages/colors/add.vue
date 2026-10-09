@@ -19,14 +19,30 @@
         
         <div>
           <label class="block text-sm font-bold mb-2">Color Name <span class="text-themeRed">*</span></label>
-          <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Ruby Red" required />
+          <input 
+            v-model="colorName" 
+            type="text" 
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+            placeholder="e.g. Ruby Red" 
+            required 
+          />
         </div>
 
         <div>
           <label class="block text-sm font-bold mb-2">Hex Code <span class="text-themeRed">*</span></label>
           <div class="flex gap-4 items-center">
-            <input type="color" v-model="colorHex" class="w-12 h-12 p-1 border border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer bg-white dark:bg-themeDark" />
-            <input type="text" v-model="colorHex" class="flex-grow px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark uppercase font-mono" placeholder="#8B0000" required />
+            <input 
+              type="color" 
+              v-model="colorHex" 
+              class="w-12 h-12 p-1 border border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer bg-white dark:bg-themeDark" 
+            />
+            <input 
+              type="text" 
+              v-model="colorHex" 
+              class="flex-grow px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark uppercase font-mono" 
+              placeholder="#8B0000" 
+              required 
+            />
           </div>
         </div>
 
@@ -34,7 +50,7 @@
           <NuxtLink to="/colors" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Color
           </button>
         </div>
@@ -47,11 +63,26 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
 
 const router = useRouter()
+const { addColor } = usePosState()
+const { showAlert } = useUiAlert()
+
+const colorName = ref('')
 const colorHex = ref('#8B0000') // Default brand color
 
 const submitForm = () => {
+  if (!colorName.value || !colorHex.value) return
+
+  const newColor = {
+    id: Date.now(),
+    name: colorName.value.trim(),
+    code: colorHex.value.trim()
+  }
+
+  addColor(newColor)
+  showAlert("Color created successfully!", "Success", "success")
   router.push('/colors')
 }
 </script>

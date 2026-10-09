@@ -9,7 +9,7 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Edit Unit</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify existing measurement unit</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify unit {{ unitName }}</p>
         </div>
       </div>
     </div>
@@ -20,18 +20,32 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Unit Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="Centimeter" required />
+            <input 
+              v-model="unitName" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Unit Code <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="cm" required />
+            <input 
+              v-model="unitCode" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Base Unit</label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="">- This is a Base Unit -</option>
-              <option value="1" selected>Meter (m)</option>
-              <option value="3">Roll (roll)</option>
+            <select 
+              v-model="baseUnit" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark"
+            >
+              <option :value="null">- This is a Base Unit -</option>
+              <option v-for="unit in availableBaseUnits" :key="unit.id" :value="unit.id">
+                {{ unit.name }} ({{ unit.code }})
+              </option>
             </select>
           </div>
         </div>
@@ -40,7 +54,7 @@
           <NuxtLink to="/units" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Changes
           </button>
         </div>
@@ -51,9 +65,43 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
+
 const router = useRouter()
+const route = useRoute()
+const { units, updateUnit } = usePosState()
+const { showAlert } = useUiAlert()
+
+const unitId = computed(() => Number(route.query.id))
+const unitName = ref('')
+const unitCode = ref('')
+const baseUnit = ref(null)
+
+const availableBaseUnits = computed(() => {
+  return units.value.filter(u => !u.base_unit && u.id !== unitId.value)
+})
+
+onMounted(() => {
+  const found = units.value.find(u => u.id === unitId.value)
+  if (found) {
+    unitName.value = found.name
+    unitCode.value = found.code
+    baseUnit.value = found.base_unit || null
+  }
+})
+
 const submitForm = () => {
+  if (!unitName.value || !unitCode.value) return
+
+  updateUnit(unitId.value, {
+    name: unitName.value.trim(),
+    code: unitCode.value.trim(),
+    base_unit: baseUnit.value ? Number(baseUnit.value) : null
+  })
+
+  showAlert(`Unit "${unitName.value}" updated successfully!`, "Updated", "success")
   router.push('/units')
 }
 </script>

@@ -9,7 +9,7 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Edit User</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify existing user profile and permissions</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify profile & permissions for {{ form.name }}</p>
         </div>
       </div>
     </div>
@@ -19,52 +19,63 @@
         
         <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2">Profile Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-bold mb-2">First Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="Sok" required />
-          </div>
-          <div>
-            <label class="block text-sm font-bold mb-2">Last Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="Chea" required />
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-sm font-bold mb-2">Full Name <span class="text-themeRed">*</span></label>
+            <input 
+              v-model="form.name" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Username <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="sokchea" required />
+            <input 
+              v-model="form.username" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              required 
+            />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Password (Leave blank to keep unchanged)</label>
-            <input type="password" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="••••••••" />
+            <label class="block text-sm font-bold mb-2">Role (Group) <span class="text-themeRed">*</span></label>
+            <select 
+              v-model="form.group_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
+              <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }}</option>
+            </select>
           </div>
         </div>
 
-        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Contact Information</h2>
+        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Contact & Access</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Email Address</label>
-            <input type="email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="cashier1@fabricshop.com" />
+            <input 
+              v-model="form.email" 
+              type="email" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Phone Number</label>
-            <input type="tel" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="+855 98 765 432" />
-          </div>
-        </div>
-
-        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Access & Permissions</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-bold mb-2">Role (Group) <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="">Select Role</option>
-              <option value="1">Admin</option>
-              <option value="2" selected>Cashier</option>
-              <option value="3">Manager</option>
-            </select>
+            <input 
+              v-model="form.phone" 
+              type="tel" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+            />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Status <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="1" selected>Active</option>
-              <option value="0">Inactive</option>
+            <label class="block text-sm font-bold mb-2">Account Status <span class="text-themeRed">*</span></label>
+            <select 
+              v-model="form.status_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
+              <option :value="1">Active</option>
+              <option :value="0">Inactive</option>
             </select>
           </div>
         </div>
@@ -73,7 +84,7 @@
           <NuxtLink to="/users" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Changes
           </button>
         </div>
@@ -84,9 +95,53 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
+
 const router = useRouter()
+const route = useRoute()
+const { users, groups, updateUser } = usePosState()
+const { showAlert } = useUiAlert()
+
+const userId = computed(() => Number(route.query.id))
+
+const form = ref({
+  name: '',
+  username: '',
+  group_id: 2,
+  email: '',
+  phone: '',
+  status_id: 1
+})
+
+onMounted(() => {
+  const user = users.value.find(u => u.id === userId.value)
+  if (user) {
+    form.value = {
+      name: user.name,
+      username: user.username,
+      group_id: user.group_id,
+      email: user.email,
+      phone: user.phone,
+      status_id: user.status_id
+    }
+  }
+})
+
 const submitForm = () => {
+  if (!form.value.name || !form.value.username) return
+
+  updateUser(userId.value, {
+    name: form.value.name.trim(),
+    username: form.value.username.trim().toLowerCase(),
+    group_id: Number(form.value.group_id),
+    email: form.value.email.trim(),
+    phone: form.value.phone.trim(),
+    status_id: Number(form.value.status_id)
+  })
+
+  showAlert(`User "${form.value.name}" updated successfully!`, "Updated", "success")
   router.push('/users')
 }
 </script>

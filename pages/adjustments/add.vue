@@ -9,7 +9,7 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">New Adjustment</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Record a stock adjustment</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Record a manual stock addition or subtraction</p>
         </div>
       </div>
     </div>
@@ -21,37 +21,79 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Reference Number</label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark bg-gray-100 dark:bg-themeDark" value="ADJ-20231024-001" readonly />
-            <p class="text-xs text-gray-500 mt-1">Auto-generated reference number</p>
+            <input 
+              :value="refNo" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-themeDark bg-gray-50 font-mono" 
+              readonly 
+            />
+            <p class="text-xs text-gray-500 mt-1">Auto-generated audit reference</p>
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Date <span class="text-themeRed">*</span></label>
-            <input type="date" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required />
+            <input 
+              v-model="form.date" 
+              type="date" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required 
+            />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Product <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="">Select Product</option>
-              <option value="1">Premium Red Silk (PRD-1001)</option>
-              <option value="2">Cotton Thread (PRD-1002)</option>
+            <label class="block text-sm font-bold mb-2">Select Product <span class="text-themeRed">*</span></label>
+            <select 
+              v-model="form.product_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
+              <option value="">-- Choose Fabric / Item --</option>
+              <option v-for="p in products" :key="p.id" :value="p.id">
+                {{ p.name }} ({{ p.code }}) - Stock: {{ p.stock }} {{ p.unit }}
+              </option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Type <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="">Select Type</option>
-              <option value="Damage">Damage (Subtraction)</option>
-              <option value="Loss">Loss (Subtraction)</option>
-              <option value="Addition">Addition</option>
+            <label class="block text-sm font-bold mb-2">Adjustment Type <span class="text-themeRed">*</span></label>
+            <select 
+              v-model="form.type" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
+              <option value="addition">Addition (+ Increase Stock)</option>
+              <option value="damage">Damage (- Decrease Stock)</option>
+              <option value="loss">Loss (- Decrease Stock)</option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Quantity <span class="text-themeRed">*</span></label>
-            <input type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="0" required />
+            <input 
+              v-model.number="form.quantity" 
+              type="number" 
+              step="any" 
+              min="0.01" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              placeholder="e.g. 2.5" 
+              required 
+            />
+            <p v-if="selectedProduct" class="text-xs text-gray-500 mt-1">
+              Unit: {{ selectedProduct.unit }}. Current stock is {{ selectedProduct.stock }} {{ selectedProduct.unit }}.
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-bold mb-2">Audited By</label>
+            <input 
+              v-model="form.created_by" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+            />
           </div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold mb-2">Note / Reason</label>
-            <textarea class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark h-24" placeholder="Brief explanation for this stock adjustment (e.g., Damaged items, Inventory count discrepancy)"></textarea>
+            <label class="block text-sm font-bold mb-2">Note / Reason <span class="text-themeRed">*</span></label>
+            <textarea 
+              v-model="form.note" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark h-24" 
+              placeholder="Explanation for audit log (e.g. Fabric remnant cutting, weaving defect damage, stocktake discrepancy)" 
+              required
+            ></textarea>
           </div>
         </div>
 
@@ -59,7 +101,7 @@
           <NuxtLink to="/adjustments" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Adjustment
           </button>
         </div>
@@ -70,9 +112,51 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
+
 const router = useRouter()
+const { products, addAdjustment } = usePosState()
+const { showAlert } = useUiAlert()
+
+const refNo = ref(`ADJ-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(100 + Math.random() * 900)}`)
+
+const form = ref({
+  date: new Date().toISOString().split('T')[0],
+  product_id: '',
+  type: 'damage',
+  quantity: 1,
+  note: '',
+  created_by: 'Admin User'
+})
+
+const selectedProduct = computed(() => {
+  return products.value.find(p => p.id === Number(form.value.product_id))
+})
+
 const submitForm = () => {
+  if (!form.value.product_id || !form.value.quantity) return
+
+  const prod = selectedProduct.value
+  if (!prod) return
+
+  const adjustment = {
+    id: Date.now(),
+    reference_no: refNo.value,
+    date: form.value.date,
+    product_id: prod.id,
+    product_name: prod.name,
+    product_code: prod.code,
+    type: form.value.type,
+    quantity: Number(form.value.quantity),
+    unit: prod.unit,
+    note: form.value.note.trim(),
+    created_by: form.value.created_by.trim()
+  }
+
+  addAdjustment(adjustment)
+  showAlert(`Adjustment ${adjustment.reference_no} saved. Stock updated!`, "Adjustment Saved", "success")
   router.push('/adjustments')
 }
 </script>

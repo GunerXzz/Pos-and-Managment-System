@@ -1,19 +1,19 @@
 <template>
-  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-themeDark text-gray-900 dark:text-gray-100">
+  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b-2 border-themeGold pb-4 gap-4">
       <div>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">{{ $t('roles_groups') }}</h1>
+        <h1 class="text-3xl font-bold dark:text-white">{{ $t('roles_groups') }}</h1>
         <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Manage user roles and permissions</p>
       </div>
-      <NuxtLink to="/groups/add" class="w-full md:w-auto bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-md transition border border-red-900 whitespace-nowrap text-center">
+      <NuxtLink to="/groups/add" class="w-full md:w-auto bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-md transition whitespace-nowrap text-center">
         + Add Group
       </NuxtLink>
     </div>
 
-    <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
+    <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
       <div class="overflow-x-auto h-full">
         <table class="w-full text-left border-collapse whitespace-nowrap">
-          <thead class="bg-white dark:bg-themeDark text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
+          <thead class="bg-white dark:bg-[#1A1D26] text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
             <tr>
               <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs w-1/4">Name</th>
               <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Description</th>
@@ -22,17 +22,30 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="group in mockGroups" :key="group.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
+            <tr v-if="groups.length === 0">
+              <td colspan="4" class="p-8 text-center text-gray-400">
+                No roles or groups found.
+              </td>
+            </tr>
+            <tr v-for="group in groups" :key="group.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
               <td class="p-3 md:p-4 font-bold text-gray-800 dark:text-gray-100">{{ group.name }}</td>
               <td class="p-3 md:p-4 text-sm text-gray-600 dark:text-gray-300">{{ group.description }}</td>
               <td class="p-3 md:p-4">
-                <span :class="group.status === 1 ? 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'" class="px-2 py-1 rounded text-xs font-bold uppercase border">
+                <span :class="group.status === 1 ? 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-[#252936] dark:text-gray-300 dark:border-gray-700' : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'" class="px-2 py-1 rounded text-xs font-bold uppercase border">
                   {{ group.status === 1 ? 'Active' : 'Inactive' }}
                 </span>
               </td>
               <td class="p-3 md:p-4 text-right">
-                <NuxtLink to="/groups/edit" class="text-themeGold hover:text-yellow-600  hover:underline mr-4 text-sm font-semibold uppercase">Edit Role</NuxtLink>
-                <button @click="deleteGroup(group)" class="text-red-500 hover:underline text-sm font-semibold uppercase">Delete</button>
+                <div class="flex items-center justify-end gap-2">
+                  <NuxtLink :to="'/groups/edit?id=' + group.id" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Edit
+                  </NuxtLink>
+                  <button v-if="group.id !== 1" @click="handleDeleteGroup(group)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -43,20 +56,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { usePosState } from '~/composables/usePosState'
 
-// ERD matches: bpas_groups
-const mockGroups = ref([
-  { id: 1, name: 'Admin', description: 'Administrator with full access', status: 1 },
-  { id: 2, name: 'Cashier', description: 'Point of sale access only', status: 1 },
-  { id: 3, name: 'Manager', description: 'Managerial access without system config', status: 0 },
-])
+const { groups, deleteGroup } = usePosState()
+const { showConfirm, showAlert } = useUiAlert()
 
-const deleteGroup = async (group) => {
-  const { showConfirm } = useUiAlert()
-  const result = await showConfirm(`Are you sure you want to delete group ${group.name}?`, "Delete Group")
+const handleDeleteGroup = async (group) => {
+  const result = await showConfirm(`Are you sure you want to delete role "${group.name}"?`, "Delete Group")
   if (result.isConfirmed) {
-    mockGroups.value = mockGroups.value.filter(g => g.id !== group.id)
+    deleteGroup(group.id)
+    showAlert(`Role "${group.name}" deleted successfully!`, "Deleted", "success")
   }
 }
 </script>

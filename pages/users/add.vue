@@ -9,7 +9,7 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Add User</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Create a new system user</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Create a new system user or cashier</p>
         </div>
       </div>
     </div>
@@ -21,46 +21,65 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="col-span-1 md:col-span-2">
             <label class="block text-sm font-bold mb-2">Full Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Sok Chea" required />
+            <input 
+              v-model="form.name" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              placeholder="e.g. Sok Chea" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Username <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. sokchea" required />
+            <input 
+              v-model="form.username" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              placeholder="e.g. sokchea" 
+              required 
+            />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Password <span class="text-themeRed">*</span></label>
-            <input type="password" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="••••••••" required />
+            <label class="block text-sm font-bold mb-2">Role (Group) <span class="text-themeRed">*</span></label>
+            <select 
+              v-model="form.group_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
+              <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }}</option>
+            </select>
           </div>
         </div>
 
-        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Contact Information</h2>
+        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Contact & Access</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Email Address</label>
-            <input type="email" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. sokchea@fabricshop.com" />
+            <input 
+              v-model="form.email" 
+              type="email" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              placeholder="e.g. sokchea@fabricshop.com" 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Phone Number</label>
-            <input type="tel" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. +855 98 765 432" />
-          </div>
-        </div>
-
-        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Access & Permissions</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-bold mb-2">Role (Group) <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="">Select Role</option>
-              <option value="1">Admin</option>
-              <option value="2">Cashier</option>
-              <option value="3">Manager</option>
-            </select>
+            <input 
+              v-model="form.phone" 
+              type="tel" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              placeholder="e.g. +855 98 765 432" 
+            />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Status <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="1">Active</option>
-              <option value="0">Inactive</option>
+            <label class="block text-sm font-bold mb-2">Account Status <span class="text-themeRed">*</span></label>
+            <select 
+              v-model="form.status_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
+              <option :value="1">Active</option>
+              <option :value="0">Inactive</option>
             </select>
           </div>
         </div>
@@ -69,7 +88,7 @@
           <NuxtLink to="/users" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save User
           </button>
         </div>
@@ -80,9 +99,38 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
+
 const router = useRouter()
+const { groups, addUser } = usePosState()
+const { showAlert } = useUiAlert()
+
+const form = ref({
+  name: '',
+  username: '',
+  group_id: 2, // Default: Cashier
+  email: '',
+  phone: '',
+  status_id: 1
+})
+
 const submitForm = () => {
+  if (!form.value.name || !form.value.username) return
+
+  const newUser = {
+    id: Date.now(),
+    name: form.value.name.trim(),
+    username: form.value.username.trim().toLowerCase(),
+    group_id: Number(form.value.group_id),
+    email: form.value.email.trim(),
+    phone: form.value.phone.trim(),
+    status_id: Number(form.value.status_id)
+  }
+
+  addUser(newUser)
+  showAlert(`User "${newUser.name}" added successfully!`, "Success", "success")
   router.push('/users')
 }
 </script>

@@ -22,7 +22,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="mockUnits.length === 0">
+            <tr v-if="units.length === 0">
               <td colspan="4" class="p-8 text-center text-gray-400">
                 <div class="flex flex-col items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,20 +33,22 @@
                 </div>
               </td>
             </tr>
-            <tr v-for="unit in mockUnits" :key="unit.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
+            <tr v-for="unit in units" :key="unit.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
               <td class="p-3 md:p-4 font-mono font-bold text-themeRed dark:text-red-400">{{ unit.code }}</td>
               <td class="p-3 md:p-4 font-bold text-gray-800 dark:text-gray-100">{{ unit.name }}</td>
               <td class="p-3 md:p-4">
-                <span v-if="unit.base_unit" class="text-sm font-mono bg-gray-100 dark:bg-[#252936] px-2 py-1 rounded border border-gray-200 dark:border-gray-700">ID: {{ unit.base_unit }}</span>
+                <span v-if="unit.base_unit" class="text-sm font-mono bg-gray-100 dark:bg-[#252936] px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+                  Base: {{ getBaseUnitName(unit.base_unit) }}
+                </span>
                 <span v-else class="text-xs font-bold text-gray-400 uppercase tracking-widest">- Base Unit -</span>
               </td>
               <td class="p-3 md:p-4 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <NuxtLink to="/units/edit" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
+                  <NuxtLink :to="'/units/edit?id=' + unit.id" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     Edit
                   </NuxtLink>
-                  <button @click="deleteUnit(unit)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
+                  <button @click="handleDeleteUnit(unit)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     Delete
                   </button>
@@ -61,17 +63,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { usePosState } from '~/composables/usePosState'
 
-// Cleaned: Measurement units list is initially empty.
-// Add new units via /units/add or populate this array.
-const mockUnits = ref([])
+const { units, deleteUnit } = usePosState()
+const { showConfirm, showAlert } = useUiAlert()
 
-const deleteUnit = async (unit) => {
-  const { showConfirm } = useUiAlert()
-  const result = await showConfirm(`Are you sure you want to delete unit ${unit.name}?`, "Delete Unit")
+const getBaseUnitName = (baseUnitId) => {
+  const found = units.value.find(u => u.id === baseUnitId)
+  return found ? `${found.name} (${found.code})` : `ID: ${baseUnitId}`
+}
+
+const handleDeleteUnit = async (unit) => {
+  const result = await showConfirm(`Are you sure you want to delete unit "${unit.name}"?`, "Delete Unit")
   if (result.isConfirmed) {
-    mockUnits.value = mockUnits.value.filter(u => u.id !== unit.id)
+    deleteUnit(unit.id)
+    showAlert(`Unit "${unit.name}" deleted successfully!`, "Deleted", "success")
   }
 }
 </script>

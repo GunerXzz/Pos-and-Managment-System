@@ -9,7 +9,7 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Edit Color</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Update color details and hex code</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Update color {{ colorName }} and hex code</p>
         </div>
       </div>
     </div>
@@ -19,14 +19,30 @@
         
         <div>
           <label class="block text-sm font-bold mb-2">Color Name <span class="text-themeRed">*</span></label>
-          <input type="text" value="Red" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Ruby Red" required />
+          <input 
+            v-model="colorName" 
+            type="text" 
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+            placeholder="e.g. Ruby Red" 
+            required 
+          />
         </div>
 
         <div>
           <label class="block text-sm font-bold mb-2">Hex Code <span class="text-themeRed">*</span></label>
           <div class="flex gap-4 items-center">
-            <input type="color" v-model="colorHex" class="w-12 h-12 p-1 border border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer bg-white dark:bg-themeDark" />
-            <input type="text" v-model="colorHex" class="flex-grow px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark uppercase font-mono" placeholder="#8B0000" required />
+            <input 
+              type="color" 
+              v-model="colorHex" 
+              class="w-12 h-12 p-1 border border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer bg-white dark:bg-themeDark" 
+            />
+            <input 
+              type="text" 
+              v-model="colorHex" 
+              class="flex-grow px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark uppercase font-mono" 
+              placeholder="#8B0000" 
+              required 
+            />
           </div>
         </div>
 
@@ -34,8 +50,8 @@
           <NuxtLink to="/colors" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
-            Update Color
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
+            Save Changes
           </button>
         </div>
 
@@ -45,13 +61,36 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
 
 const router = useRouter()
-const colorHex = ref('#FF0000') // Pre-filled with mock "Red" color
+const route = useRoute()
+const { colors, updateColor } = usePosState()
+const { showAlert } = useUiAlert()
+
+const colorId = computed(() => Number(route.query.id))
+const colorName = ref('')
+const colorHex = ref('#8B0000')
+
+onMounted(() => {
+  const found = colors.value.find(c => c.id === colorId.value)
+  if (found) {
+    colorName.value = found.name
+    colorHex.value = found.code
+  }
+})
 
 const submitForm = () => {
+  if (!colorName.value || !colorHex.value) return
+
+  updateColor(colorId.value, {
+    name: colorName.value.trim(),
+    code: colorHex.value.trim()
+  })
+
+  showAlert(`Color "${colorName.value}" updated successfully!`, "Updated", "success")
   router.push('/colors')
 }
 </script>

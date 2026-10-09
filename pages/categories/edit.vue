@@ -9,7 +9,7 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Edit Category</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify existing category details</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Modify category {{ categoryName }}</p>
         </div>
       </div>
     </div>
@@ -20,23 +20,42 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Category Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="Silk" required />
+            <input 
+              v-model="categoryName" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Category Code <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" value="CAT-SLK" required />
+            <input 
+              v-model="categoryCode" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark uppercase" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Parent Category</label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="" selected>None (Top Level)</option>
-              <option value="3">Cotton</option>
+            <select 
+              v-model="parentId" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark"
+            >
+              <option :value="null">None (Top Level)</option>
+              <option v-for="cat in availableParentCategories" :key="cat.id" :value="cat.id">
+                {{ cat.name }} ({{ cat.code }})
+              </option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Status <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="Active" selected>Active</option>
+            <select 
+              v-model="status" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
+              <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
           </div>
@@ -46,7 +65,7 @@
           <NuxtLink to="/categories" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Changes
           </button>
         </div>
@@ -57,9 +76,46 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
+
 const router = useRouter()
+const route = useRoute()
+const { categories, updateCategory } = usePosState()
+const { showAlert } = useUiAlert()
+
+const categoryId = computed(() => Number(route.query.id))
+const categoryName = ref('')
+const categoryCode = ref('')
+const parentId = ref(null)
+const status = ref('Active')
+
+const availableParentCategories = computed(() => {
+  return categories.value.filter(c => !c.parent_id && c.id !== categoryId.value)
+})
+
+onMounted(() => {
+  const found = categories.value.find(c => c.id === categoryId.value)
+  if (found) {
+    categoryName.value = found.name
+    categoryCode.value = found.code
+    parentId.value = found.parent_id || null
+    status.value = found.status || 'Active'
+  }
+})
+
 const submitForm = () => {
+  if (!categoryName.value || !categoryCode.value) return
+
+  updateCategory(categoryId.value, {
+    name: categoryName.value.trim(),
+    code: categoryCode.value.trim().toUpperCase(),
+    parent_id: parentId.value ? Number(parentId.value) : null,
+    status: status.value
+  })
+
+  showAlert(`Category "${categoryName.value}" updated successfully!`, "Updated", "success")
   router.push('/categories')
 }
 </script>

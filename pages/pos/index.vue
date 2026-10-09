@@ -20,13 +20,7 @@
             class="w-1/3 md:w-36 px-2.5 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#252936] text-gray-900 dark:text-gray-100 focus:outline-none focus:border-themeRed text-xs font-semibold transition"
           >
             <option value="">All Colors</option>
-            <option value="Red">Red</option>
-            <option value="Light Blue">Light Blue</option>
-            <option value="White">White</option>
-            <option value="Gold">Gold</option>
-            <option value="Dark Red">Dark Red</option>
-            <option value="Purple">Purple</option>
-            <option value="Royal Blue">Royal Blue</option>
+            <option v-for="clr in colors" :key="clr.id" :value="clr.name">{{ clr.name }}</option>
           </select>
 
           <!-- Search Input -->
@@ -52,31 +46,19 @@
         <button 
           @click="activeCategory = 'all'"
           :class="activeCategory === 'all' ? 'border-themeRed text-themeRed dark:text-red-400 border-b-2 font-bold' : 'border-transparent text-gray-500 hover:text-themeRed font-medium'"
-          class="pb-1.5 px-2 whitespace-nowrap text-xs transition flex items-center gap-1.5"
+          class="pb-1.5 px-2 whitespace-nowrap text-xs transition flex items-center gap-1.5 cursor-pointer"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
           All Items ({{ products.length }})
         </button>
         <button 
-          @click="activeCategory = 'silk'"
-          :class="activeCategory === 'silk' ? 'border-themeRed text-themeRed dark:text-red-400 border-b-2 font-bold' : 'border-transparent text-gray-500 hover:text-themeRed font-medium'"
-          class="pb-1.5 px-2 whitespace-nowrap text-xs transition"
+          v-for="cat in categories"
+          :key="cat.id"
+          @click="activeCategory = cat.id"
+          :class="activeCategory === cat.id ? 'border-themeRed text-themeRed dark:text-red-400 border-b-2 font-bold' : 'border-transparent text-gray-500 hover:text-themeRed font-medium'"
+          class="pb-1.5 px-2 whitespace-nowrap text-xs transition cursor-pointer"
         >
-          Silk & Hol
-        </button>
-        <button 
-          @click="activeCategory = 'cotton'"
-          :class="activeCategory === 'cotton' ? 'border-themeRed text-themeRed dark:text-red-400 border-b-2 font-bold' : 'border-transparent text-gray-500 hover:text-themeRed font-medium'"
-          class="pb-1.5 px-2 whitespace-nowrap text-xs transition"
-        >
-          Cotton
-        </button>
-        <button 
-          @click="activeCategory = 'accessories'"
-          :class="activeCategory === 'accessories' ? 'border-themeRed text-themeRed dark:text-red-400 border-b-2 font-bold' : 'border-transparent text-gray-500 hover:text-themeRed font-medium'"
-          class="pb-1.5 px-2 whitespace-nowrap text-xs transition"
-        >
-          Accessories & Ribbons
+          {{ cat.name }}
         </button>
       </div>
 
@@ -182,7 +164,7 @@
           <button @click="showHistory = true" class="text-blue-500 hover:text-blue-700 transition p-1.5 rounded hover:bg-blue-50 dark:hover:bg-gray-800" title="View Sales History">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </button>
-          <button @click="cart = []" v-if="cart.length > 0" class="text-gray-400 hover:text-red-600 transition p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800" title="Clear Cart">
+          <button @click="confirmClearCart" v-if="cart.length > 0" class="text-gray-400 hover:text-red-600 transition p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800" title="Clear Cart">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
           </button>
         </div>
@@ -198,7 +180,7 @@
         
         <div 
           v-for="(cartItem, index) in cart" 
-          :key="index" 
+          :key="cartItem.cartItemId" 
           class="group flex flex-col p-2.5 bg-white dark:bg-[#1A1D26] rounded-xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 shadow-xs transition"
         >
           <div class="flex items-start">
@@ -220,9 +202,6 @@
                   </div>
                 </div>
                 <div class="flex gap-1 -mt-1 -mr-1">
-                  <button @click="openEditItem(cartItem)" class="text-gray-400 hover:text-themeGold transition p-1" title="Edit Item Discount or Custom Price">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                  </button>
                   <button @click="cart.splice(index, 1)" class="text-gray-400 hover:text-themeRed transition p-1" title="Remove">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                   </button>
@@ -261,18 +240,46 @@
                 </div>
                 
                 <div class="text-right">
-                  <p v-if="cartItem.discount > 0" class="text-[10px] text-gray-400 line-through">
+                  <p v-if="getItemDiscountAmount(cartItem) > 0" class="text-[10px] text-gray-400 line-through">
                     ${{ (cartItem.price * cartItem.quantity).toFixed(2) }}
                   </p>
                   <p class="font-extrabold text-gray-900 dark:text-white text-sm">
-                    ${{ ((cartItem.price * cartItem.quantity) * (1 - (cartItem.discount || 0) / 100)).toFixed(2) }}
+                    ${{ (cartItem.price * cartItem.quantity - getItemDiscountAmount(cartItem)).toFixed(2) }}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Quick Preset Fast-Cut Chips (TASK 1) -->
+          <!-- Inline Item Discount Row -->
+          <div class="flex flex-wrap items-center gap-2 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800/80">
+            <span class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Discount:</span>
+            <div class="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden text-[10px]">
+              <button
+                type="button"
+                @click="cartItem.discountType = 'percent'"
+                :class="!cartItem.discountType || cartItem.discountType === 'percent' ? 'bg-themeRed text-white font-bold' : 'bg-gray-100 dark:bg-[#252936] text-gray-500'"
+                class="px-2 py-0.5 transition"
+              >%</button>
+              <button
+                type="button"
+                @click="cartItem.discountType = 'fixed'"
+                :class="cartItem.discountType === 'fixed' ? 'bg-themeRed text-white font-bold' : 'bg-gray-100 dark:bg-[#252936] text-gray-500'"
+                class="px-2 py-0.5 transition"
+              >$</button>
+            </div>
+            <input
+              type="number"
+              v-model.number="cartItem.discount"
+              :max="cartItem.discountType === 'fixed' ? cartItem.price * cartItem.quantity : 100"
+              min="0"
+              step="0.01"
+              class="w-16 text-[10px] px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#252936] text-gray-900 dark:text-white focus:outline-none focus:border-themeRed"
+              :placeholder="cartItem.discountType === 'fixed' ? '$0.00' : '0%'"
+            />
+          </div>
+
+          <!-- Quick Preset Fast-Cut Chips -->
           <div class="flex flex-wrap items-center gap-1.5 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800/80">
             <span class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mr-1">Fast Cut:</span>
             <button 
@@ -342,42 +349,212 @@
                 />
                 <span>Pick up later (Pending / Tailoring)</span>
               </label>
-              <span class="text-[10px] text-gray-400">Default: ABA KHQR</span>
+              <span class="text-[10px] text-gray-400 font-medium">Auto-synced</span>
             </div>
           </div>
         </div>
 
-        <!-- Price Breakdown -->
-        <div class="space-y-1.5 mb-3.5">
-          <div class="flex justify-between text-xs text-gray-500 font-semibold">
-            <span>Subtotal</span>
-            <span>${{ cartSubtotal.toFixed(2) }}</span>
-          </div>
-          <div v-if="cartItemDiscounts > 0" class="flex justify-between text-xs text-themeRed dark:text-red-400 font-semibold">
-            <span>Item Discounts</span>
-            <span>-${{ cartItemDiscounts.toFixed(2) }}</span>
-          </div>
-          <div class="flex justify-between text-xs text-themeRed dark:text-themeGold font-semibold">
-            <button @click="showGlobalDiscountModal = true" class="hover:underline flex items-center gap-1 text-left">
-              <span>Order Discount <span v-if="globalDiscount > 0">({{ globalDiscount }}%)</span></span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+        <!-- Payment Method Selector -->
+        <div class="mb-3">
+          <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Payment Method</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button 
+              type="button"
+              @click="paymentMethod = 'khqr'"
+              :class="paymentMethod === 'khqr' 
+                ? 'bg-emerald-600 text-white font-bold shadow border-emerald-600' 
+                : 'bg-gray-100 dark:bg-[#252936] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-emerald-500'"
+              class="py-2 px-3 rounded-lg border text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+              <span>ABA / KHQR (95%)</span>
             </button>
-            <span v-if="globalDiscount > 0">-${{ ((cartSubtotal - cartItemDiscounts) * (globalDiscount / 100)).toFixed(2) }}</span>
-            <span v-else>$0.00</span>
+            <button 
+              type="button"
+              @click="paymentMethod = 'cash'"
+              :class="paymentMethod === 'cash' 
+                ? 'bg-themeGold text-gray-950 font-bold shadow border-themeGold' 
+                : 'bg-gray-100 dark:bg-[#252936] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-themeGold'"
+              class="py-2 px-3 rounded-lg border text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+            >
+              <span>💵 Cash (USD & KHR)</span>
+            </button>
           </div>
-          
+        </div>
+
+        <!-- Cash & Change Calculator (When Cash is selected) -->
+        <div v-if="paymentMethod === 'cash'" class="mb-3.5 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2.5 animate-fade-in">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1">
+              💵 Cash Received & Change
+            </span>
+            <div class="flex gap-1.5">
+              <button 
+                type="button" 
+                @click="setExactCash" 
+                class="px-2 py-0.5 rounded text-[10px] font-bold bg-themeGold/20 hover:bg-themeGold text-gray-900 dark:text-white transition cursor-pointer"
+              >
+                Exact ($)
+              </button>
+              <button 
+                type="button" 
+                @click="clearCash" 
+                class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-100 hover:text-red-600 transition cursor-pointer"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Dual Currency Inputs -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-gray-500 mb-1">USD Received ($)</label>
+              <div class="relative">
+                <span class="absolute left-2.5 top-1.5 text-xs text-gray-400 font-bold">$</span>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  min="0"
+                  v-model.number="cashReceivedUSD" 
+                  placeholder="0.00"
+                  class="w-full pl-6 pr-2 py-1.5 text-xs font-mono font-bold rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D26] text-gray-900 dark:text-white focus:outline-none focus:border-themeGold"
+                />
+              </div>
+              <!-- Fast USD Chips -->
+              <div class="flex flex-wrap gap-1 mt-1.5">
+                <button type="button" @click="addCashUSD(10)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+$10</button>
+                <button type="button" @click="addCashUSD(20)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+$20</button>
+                <button type="button" @click="addCashUSD(50)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+$50</button>
+                <button type="button" @click="addCashUSD(100)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+$100</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-gray-500 mb-1">KHR Received (៛)</label>
+              <div class="relative">
+                <span class="absolute left-2 top-1.5 text-xs text-gray-400 font-bold">៛</span>
+                <input 
+                  type="number" 
+                  step="100" 
+                  min="0"
+                  v-model.number="cashReceivedKHR" 
+                  placeholder="0"
+                  class="w-full pl-5 pr-2 py-1.5 text-xs font-mono font-bold rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1A1D26] text-gray-900 dark:text-white focus:outline-none focus:border-themeGold"
+                />
+              </div>
+              <!-- Fast KHR Chips -->
+              <div class="flex flex-wrap gap-1 mt-1.5">
+                <button type="button" @click="addCashKHR(20000)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+20k</button>
+                <button type="button" @click="addCashKHR(50000)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+50k</button>
+                <button type="button" @click="addCashKHR(100000)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+100k</button>
+                <button type="button" @click="addCashKHR(200000)" class="px-1.5 py-0.5 rounded text-[10px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-themeGold font-mono cursor-pointer">+200k</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Tendered & Change Due Status -->
+          <div class="pt-2 border-t border-amber-500/20">
+            <div class="flex justify-between text-xs text-gray-600 dark:text-gray-300 mb-1">
+              <span>Total Tendered:</span>
+              <span class="font-mono font-bold">${{ totalCashReceivedUSD.toFixed(2) }} (៛{{ formatKHR(Math.round(totalCashReceivedUSD * exchangeRate)) }})</span>
+            </div>
+
+            <!-- Change Due (Sufficient) -->
+            <div v-if="!isCashUnderpaid && totalCashReceivedUSD >= cartTotal && cart.length > 0" class="p-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 flex justify-between items-center">
+              <div>
+                <span class="block text-[10px] uppercase font-bold tracking-wider">Change Due</span>
+                <span class="text-sm font-black font-mono">${{ changeDueUSD.toFixed(2) }}</span>
+              </div>
+              <div class="text-right">
+                <span class="block text-[10px] uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">In Riel</span>
+                <span class="text-sm font-black font-mono">៛{{ formatKHR(changeDueKHR) }}</span>
+              </div>
+            </div>
+
+            <!-- Underpaid Warning -->
+            <div v-else-if="isCashUnderpaid" class="p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-400 text-xs font-semibold flex items-center justify-between">
+              <span>⚠️ Short by:</span>
+              <span class="font-mono font-bold">${{ (cartTotal - totalCashReceivedUSD).toFixed(2) }} (៛{{ formatKHR(Math.round((cartTotal - totalCashReceivedUSD) * exchangeRate)) }})</span>
+            </div>
+          </div>
+        </div>
+
+          <!-- Exchange Rate Editable Badge -->
+          <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
+            <span>Exchange Rate</span>
+            <div v-if="!editingRate" class="flex items-center gap-1">
+              <span class="font-mono">1 USD = {{ exchangeRate.toLocaleString() }} ៛</span>
+              <button @click="editingRate = true; tempRate = exchangeRate" class="ml-1 hover:text-themeGold transition" title="Edit rate">✎</button>
+            </div>
+            <div v-else class="flex items-center gap-1">
+              <input
+                type="number"
+                v-model.number="tempRate"
+                min="1"
+                class="w-20 text-xs px-1.5 py-0.5 rounded border border-themeGold bg-white dark:bg-[#252936] text-gray-900 dark:text-white focus:outline-none font-mono"
+                @keyup.enter="exchangeRate = tempRate; editingRate = false"
+                @blur="exchangeRate = tempRate; editingRate = false"
+              />
+              <button @click="exchangeRate = tempRate; editingRate = false" class="text-emerald-500 hover:text-emerald-400 text-xs font-bold">✓</button>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="space-y-1.5 mb-3.5">
+            <div class="flex justify-between text-xs text-gray-500 font-semibold">
+              <span>Subtotal</span>
+              <span>${{ cartSubtotal.toFixed(2) }}</span>
+            </div>
+            <div v-if="cartItemDiscounts > 0" class="flex justify-between text-xs text-themeRed dark:text-red-400 font-semibold">
+              <span>Item Discounts</span>
+              <span>-${{ cartItemDiscounts.toFixed(2) }}</span>
+            </div>
+
+            <!-- Inline Order Discount (replaces modal) -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-500 font-semibold">Order Discount</span>
+              <div class="flex items-center gap-1.5">
+                <div class="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden text-[10px]">
+                  <button
+                    type="button"
+                    @click="globalDiscountType = 'percent'"
+                    :class="globalDiscountType === 'percent' ? 'bg-themeGold text-gray-950 font-bold' : 'bg-gray-100 dark:bg-[#252936] text-gray-500'"
+                    class="px-2 py-0.5 transition"
+                  >%</button>
+                  <button
+                    type="button"
+                    @click="globalDiscountType = 'fixed'"
+                    :class="globalDiscountType === 'fixed' ? 'bg-themeGold text-gray-950 font-bold' : 'bg-gray-100 dark:bg-[#252936] text-gray-500'"
+                    class="px-2 py-0.5 transition"
+                  >$</button>
+                </div>
+                <input
+                  type="number"
+                  v-model.number="globalDiscount"
+                  min="0"
+                  :max="globalDiscountType === 'percent' ? 100 : cartSubtotal - cartItemDiscounts"
+                  step="0.01"
+                  class="w-16 text-[10px] px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#252936] text-gray-900 dark:text-white focus:outline-none focus:border-themeGold"
+                  :placeholder="globalDiscountType === 'percent' ? '0%' : '$0'"
+                />
+                <span v-if="globalDiscount > 0" class="text-xs text-themeRed dark:text-red-400 font-semibold">-${{ globalDiscountAmount.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+
           <div class="border-t border-dashed border-gray-200 dark:border-gray-800 my-2"></div>
           
-          <!-- Dual Currency Total Badge (TASK 2) -->
+          <!-- Dual Currency Total -->
           <div class="flex justify-between items-baseline">
             <span class="text-base font-bold text-gray-800 dark:text-gray-200">Total</span>
             <div class="text-right">
-              <span class="text-2xl font-black text-themeRed dark:text-themeGold">
+              <div class="text-2xl font-black text-themeRed dark:text-themeGold">
                 ${{ cartTotal.toFixed(2) }}
-              </span>
-              <span class="ml-1.5 text-xs font-bold text-gray-500 dark:text-gray-400">
-                (៛{{ formatKHR(cartTotalKHR) }})
-              </span>
+              </div>
+              <div class="text-xs font-bold text-gray-500 dark:text-gray-400">
+                ៛{{ formatKHR(cartTotalKHR) }}
+              </div>
             </div>
           </div>
         </div>
@@ -385,13 +562,19 @@
         <!-- Streamlined Checkout Button (TASK 2 & TASK 3) -->
         <button 
           @click="processCheckout"
-          :disabled="cart.length === 0"
-          class="w-full bg-themeRed hover:bg-red-800 disabled:bg-gray-300 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed text-white py-3 rounded-xl font-bold text-base transition shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+          :disabled="cart.length === 0 || (paymentMethod === 'cash' && isCashUnderpaid)"
+          :class="cart.length === 0 || (paymentMethod === 'cash' && isCashUnderpaid) ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-themeRed hover:bg-red-800 cursor-pointer'"
+          class="w-full text-white py-3 rounded-xl font-bold text-base transition shadow-md flex items-center justify-center gap-2 active:scale-[0.99]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-themeGold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          ⚡ Complete Sale • ${{ cartTotal.toFixed(2) }} (៛{{ formatKHR(cartTotalKHR) }})
+          <span v-if="paymentMethod === 'cash' && isCashUnderpaid">
+            Enter Cash Tendered (${{ cartTotal.toFixed(2) }})
+          </span>
+          <span v-else>
+            ⚡ Complete Sale • ${{ cartTotal.toFixed(2) }} (៛{{ formatKHR(cartTotalKHR) }})
+          </span>
         </button>
       </div>
     </div>
@@ -422,7 +605,10 @@
           <div class="text-center pb-3 border-b border-dashed border-gray-300 dark:border-gray-700">
             <h2 class="text-xl font-black text-themeRed dark:text-themeGold tracking-wider uppercase">POS Fabrics & Boutique</h2>
             <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">123 Silk Road, Phnom Penh • Tel: +855 12 345 678</p>
-            <div class="inline-block mt-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/20">
+            <div v-if="completedInvoice.paymentMethod === 'Cash'" class="inline-block mt-2 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider border border-amber-500/20">
+              Paid via Cash 💵
+            </div>
+            <div v-else class="inline-block mt-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/20">
               Paid via ABA / KHQR
             </div>
           </div>
@@ -484,6 +670,66 @@
                 </div>
               </div>
             </div>
+
+            <!-- Cash tendered & Change details if paid via cash -->
+            <div v-if="completedInvoice.paymentMethod === 'Cash'" class="pt-2 mt-2 border-t border-dashed border-gray-200 dark:border-gray-700 text-xs space-y-1">
+              <div class="flex justify-between text-gray-500">
+                <span>Cash Tendered (USD):</span>
+                <span class="font-mono font-bold text-gray-800 dark:text-gray-200">${{ (completedInvoice.cashTenderedUSD || 0).toFixed(2) }}</span>
+              </div>
+              <div v-if="completedInvoice.cashTenderedKHR > 0" class="flex justify-between text-gray-500">
+                <span>Cash Tendered (KHR):</span>
+                <span class="font-mono font-bold text-gray-800 dark:text-gray-200">៛{{ formatKHR(completedInvoice.cashTenderedKHR) }}</span>
+              </div>
+              <div class="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold pt-1">
+                <span>Change Returned:</span>
+                <span class="font-mono">${{ (completedInvoice.changeUSD || 0).toFixed(2) }} (៛{{ formatKHR(completedInvoice.changeKHR) }})</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Receipt Code Display (Barcode / QR / Both) in Preview -->
+          <div class="pt-3 border-t border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center">
+            <ReceiptCode 
+              :value="completedInvoice.invoiceNo || 'INV-001'" 
+              :mode="receiptCodeFormat" 
+              :barcode-height="38"
+              :qr-size="80"
+              caption="Scan code for pickup, returns or inventory lookup"
+            />
+          </div>
+        </div>
+
+        <!-- Receipt Code Format Selector (Barcode vs QR vs Both) -->
+        <div class="px-4 py-2 bg-gray-100 dark:bg-[#222634] border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          <span class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+            🏷️ Print Format:
+          </span>
+          <div class="inline-flex rounded-lg border border-gray-300 dark:border-gray-700 p-0.5 bg-white dark:bg-[#1A1D26] text-xs">
+            <button 
+              type="button" 
+              @click="receiptCodeFormat = 'barcode'"
+              :class="receiptCodeFormat === 'barcode' ? 'bg-themeRed text-white font-bold shadow' : 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'"
+              class="px-2 py-0.5 rounded transition text-[11px] cursor-pointer"
+            >
+              Barcode
+            </button>
+            <button 
+              type="button" 
+              @click="receiptCodeFormat = 'qr'"
+              :class="receiptCodeFormat === 'qr' ? 'bg-themeRed text-white font-bold shadow' : 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'"
+              class="px-2 py-0.5 rounded transition text-[11px] cursor-pointer"
+            >
+              QR Code
+            </button>
+            <button 
+              type="button" 
+              @click="receiptCodeFormat = 'both'"
+              :class="receiptCodeFormat === 'both' ? 'bg-themeRed text-white font-bold shadow' : 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'"
+              class="px-2 py-0.5 rounded transition text-[11px] cursor-pointer"
+            >
+              Both
+            </button>
           </div>
         </div>
 
@@ -547,13 +793,23 @@
             <span>៛{{ formatKHR(completedInvoice.totalKHR || cartTotalKHR) }}</span>
           </div>
           <div class="text-xs text-gray-600 mt-2">
-            Paid via: {{ completedInvoice.paymentMethod || 'ABA / KHQR' }}
+            Payment: {{ completedInvoice.paymentMethod || 'ABA / KHQR' }}
+          </div>
+          <div v-if="completedInvoice.paymentMethod === 'Cash'" class="text-xs text-gray-700 mt-1 space-y-0.5">
+            <div>Paid: ${{ (completedInvoice.cashTenderedUSD || 0).toFixed(2) }}<span v-if="completedInvoice.cashTenderedKHR > 0"> + ៛{{ formatKHR(completedInvoice.cashTenderedKHR) }}</span></div>
+            <div class="font-bold">Change: ${{ (completedInvoice.changeUSD || 0).toFixed(2) }} (៛{{ formatKHR(completedInvoice.changeKHR) }})</div>
           </div>
         </div>
 
-        <div class="text-center mt-4">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=INV-SCAN-ME" alt="QR Code" class="mx-auto w-20 h-20" />
-          <p class="text-[10px] mt-1 text-gray-500">Scan to update status</p>
+        <!-- Store Copy Code (1D Barcode & QR Code dynamic) -->
+        <div class="text-center mt-3 pt-2 border-t border-dashed border-gray-300">
+          <ReceiptCode 
+            :value="completedInvoice.invoiceNo || 'INV-001'" 
+            :mode="receiptCodeFormat" 
+            :barcode-height="35"
+            :qr-size="75"
+            caption="Scan to update status or process return"
+          />
         </div>
       </div>
 
@@ -568,7 +824,11 @@
         <div class="mb-4 px-2">
           <p class="text-xs text-left text-gray-500">Date: <span class="text-gray-800 font-semibold">{{ completedInvoice.date || new Date().toLocaleString() }}</span></p>
           <p class="text-xs text-left text-gray-500">Invoice: <span class="text-gray-800 font-semibold">{{ completedInvoice.invoiceNo || 'INV-001' }}</span></p>
-          <p class="text-xs text-left text-gray-500">Payment: <span class="text-emerald-700 font-bold">Paid via ABA / KHQR</span></p>
+          <p class="text-xs text-left text-gray-500">
+            Payment: 
+            <span v-if="completedInvoice.paymentMethod === 'Cash'" class="text-amber-800 font-bold">Paid via Cash 💵</span>
+            <span v-else class="text-emerald-700 font-bold">Paid via ABA / KHQR</span>
+          </p>
           <div class="border-b-2 border-solid border-[#FFD700] my-3"></div>
         </div>
         
@@ -592,11 +852,28 @@
             <span>RIEL</span>
             <span>៛{{ formatKHR(completedInvoice.totalKHR || cartTotalKHR) }}</span>
           </div>
+          <div v-if="completedInvoice.paymentMethod === 'Cash'" class="mt-2 pt-2 border-t border-gray-200 text-xs">
+            <div class="flex justify-between text-gray-600">
+              <span>Paid:</span>
+              <span>${{ (completedInvoice.cashTenderedUSD || 0).toFixed(2) }}<span v-if="completedInvoice.cashTenderedKHR > 0"> + ៛{{ formatKHR(completedInvoice.cashTenderedKHR) }}</span></span>
+            </div>
+            <div class="flex justify-between font-bold text-emerald-700 mt-0.5">
+              <span>Change:</span>
+              <span>${{ (completedInvoice.changeUSD || 0).toFixed(2) }} (៛{{ formatKHR(completedInvoice.changeKHR) }})</span>
+            </div>
+          </div>
         </div>
         
-        <div class="text-center mt-6">
-          <p class="text-xs text-gray-500 font-bold mb-2">Show this QR code for pickup/verification</p>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INV-SCAN-ME" alt="Customer QR Code" class="mx-auto w-24 h-24 border-4 border-white shadow-sm rounded-lg" />
+        <!-- Customer Copy Code (1D Barcode & QR Code dynamic) -->
+        <div class="text-center mt-4">
+          <p class="text-xs text-gray-500 font-bold mb-1">Receipt Verification Code</p>
+          <ReceiptCode 
+            :value="completedInvoice.invoiceNo || 'INV-001'" 
+            :mode="receiptCodeFormat" 
+            :barcode-height="40"
+            :qr-size="85"
+            caption="Show barcode / QR code for pickup or inquiry"
+          />
         </div>
 
         <div class="text-center text-xs mt-4 text-gray-500 italic">
@@ -651,19 +928,15 @@
       </div>
     </div>
 
-    <!-- EDIT ITEM MODAL -->
+    <!-- EDIT ITEM MODAL: now only used for custom unit price override -->
     <div v-if="showEditItemModal && editingItem" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-2xl w-full max-w-sm overflow-hidden p-5 border border-gray-200 dark:border-gray-800">
-        <h3 class="text-base font-bold mb-4 dark:text-white">Edit: <span class="text-themeRed dark:text-red-400">{{ editingItem.name }}</span></h3>
+        <h3 class="text-base font-bold mb-4 dark:text-white">Override Price: <span class="text-themeRed dark:text-red-400">{{ editingItem.name }}</span></h3>
         
         <div class="space-y-3">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit Price ($)</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Custom Unit Price ($)</label>
             <input type="number" step="0.01" min="0" v-model.number="editingItem.price" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-[#252936] dark:text-white focus:outline-none focus:border-themeRed text-xs" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Item Discount (%)</label>
-            <input type="number" step="1" min="0" max="100" v-model.number="editingItem.discount" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-[#252936] dark:text-white focus:outline-none focus:border-themeRed text-xs" />
           </div>
         </div>
 
@@ -677,17 +950,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 // TASK 5: Live Front-End Stock Decrement & Inventory Sync
-const { products, sales, decrementStock, addSale } = usePosState()
+const { products, categories, colors, sales, decrementStock, addSale, receiptCodeFormat } = usePosState()
+const { showConfirm } = useUiAlert()
 
 const searchQuery = ref('')
 const activeColorFilter = ref('')
 const activeCategory = ref('all')
 
-// Dual Currency Engine (TASK 2)
+// Dual Currency Engine
 const exchangeRate = ref(4100)
+const editingRate = ref(false)
+const tempRate = ref(4100)
 
 const cartTotalKHR = computed(() => {
   return Math.round((cartTotal.value * exchangeRate.value) / 100) * 100
@@ -706,12 +982,8 @@ const togglePin = (item) => {
 const filteredAndSortedProducts = computed(() => {
   let list = products.value
 
-  if (activeCategory.value === 'silk') {
-    list = list.filter(p => p.name.toLowerCase().includes('silk') || p.name.toLowerCase().includes('hol') || p.category_id === 2)
-  } else if (activeCategory.value === 'cotton') {
-    list = list.filter(p => p.name.toLowerCase().includes('cotton') || p.category_id === 3)
-  } else if (activeCategory.value === 'accessories') {
-    list = list.filter(p => p.unit === 'roll' || p.name.toLowerCase().includes('ribbon') || p.name.toLowerCase().includes('thread') || p.category_id === 4)
+  if (activeCategory.value !== 'all') {
+    list = list.filter(p => p.category_id === activeCategory.value)
   }
   
   if (searchQuery.value) {
@@ -737,6 +1009,49 @@ const filteredAndSortedProducts = computed(() => {
 // Cart State
 const cart = ref([])
 
+// Payment & Cash / Change engine (Dual Currency)
+const paymentMethod = ref('khqr') // 'khqr' or 'cash'
+const cashReceivedUSD = ref(null)
+const cashReceivedKHR = ref(null)
+
+const totalCashReceivedUSD = computed(() => {
+  const usd = parseFloat(cashReceivedUSD.value) || 0
+  const khr = parseFloat(cashReceivedKHR.value) || 0
+  return usd + (khr / exchangeRate.value)
+})
+
+const changeDueUSD = computed(() => {
+  if (paymentMethod.value !== 'cash') return 0
+  return Math.max(0, Math.round((totalCashReceivedUSD.value - cartTotal.value) * 100) / 100)
+})
+
+const changeDueKHR = computed(() => {
+  return Math.round((changeDueUSD.value * exchangeRate.value) / 100) * 100
+})
+
+const isCashUnderpaid = computed(() => {
+  if (paymentMethod.value !== 'cash') return false
+  return totalCashReceivedUSD.value < (cartTotal.value - 0.001) && cart.value.length > 0
+})
+
+const addCashUSD = (amount) => {
+  cashReceivedUSD.value = Math.round(((parseFloat(cashReceivedUSD.value) || 0) + amount) * 100) / 100
+}
+
+const addCashKHR = (amount) => {
+  cashReceivedKHR.value = (parseInt(cashReceivedKHR.value) || 0) + amount
+}
+
+const setExactCash = () => {
+  cashReceivedUSD.value = cartTotal.value
+  cashReceivedKHR.value = null
+}
+
+const clearCash = () => {
+  cashReceivedUSD.value = null
+  cashReceivedKHR.value = null
+}
+
 // Optional Special Order Accordion (TASK 3)
 const showSpecialOrderAccordion = ref(false)
 const checkoutForm = ref({
@@ -751,7 +1066,8 @@ const checkoutForm = ref({
 // History & Discounts
 const showHistory = ref(false)
 const globalDiscount = ref(0)
-const showGlobalDiscountModal = ref(false)
+const globalDiscountType = ref('percent') // 'percent' or 'fixed'
+const showGlobalDiscountModal = ref(false) // kept for backward compat but no longer needed
 const editingItem = ref(null)
 const showEditItemModal = ref(false)
 
@@ -767,6 +1083,10 @@ const completedInvoice = ref({
   total: 0,
   totalKHR: 0,
   paymentMethod: 'ABA / KHQR',
+  cashTenderedUSD: 0,
+  cashTenderedKHR: 0,
+  changeUSD: 0,
+  changeKHR: 0,
   saleStatus: 'Handed Over',
   customerName: 'Walk-in Customer'
 })
@@ -781,14 +1101,30 @@ const cartSubtotal = computed(() => {
   return cart.value.reduce((total, item) => total + (item.price * item.quantity), 0)
 })
 
+// Computes total discount amount across all cart items (supports % and $ per item)
+const getItemDiscountAmount = (item) => {
+  const lineTotal = item.price * item.quantity
+  if (item.discountType === 'fixed') {
+    return Math.min(item.discount || 0, lineTotal)
+  }
+  return lineTotal * ((parseFloat(item.discount) || 0) / 100)
+}
+
 const cartItemDiscounts = computed(() => {
-  return cart.value.reduce((total, item) => total + ((item.price * item.quantity) * (parseFloat(item.discount) || 0) / 100), 0)
+  return cart.value.reduce((total, item) => total + getItemDiscountAmount(item), 0)
+})
+
+const globalDiscountAmount = computed(() => {
+  const afterItems = cartSubtotal.value - cartItemDiscounts.value
+  if (globalDiscountType.value === 'fixed') {
+    return Math.min(parseFloat(String(globalDiscount.value)) || 0, afterItems)
+  }
+  return afterItems * ((parseFloat(String(globalDiscount.value)) || 0) / 100)
 })
 
 const cartTotal = computed(() => {
-  const remainingSubtotal = cartSubtotal.value - cartItemDiscounts.value
-  const globalDiscountAmount = remainingSubtotal * ((parseFloat(globalDiscount.value) || 0) / 100)
-  return Math.max(0, remainingSubtotal - globalDiscountAmount)
+  const afterItems = cartSubtotal.value - cartItemDiscounts.value
+  return Math.round(Math.max(0, afterItems - globalDiscountAmount.value) * 100) / 100
 })
 
 // TASK 1: Decimal cuts and adjustments
@@ -839,6 +1175,7 @@ const addToCart = (product) => {
     // Default to 1 meter/unit (or available stock if < 1)
     const initialQty = (!product.is_service && product.stock < 1) ? product.stock : 1
     cart.value.push({ 
+      cartItemId: `cit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, // unique stable key
       id: product.id,
       name: product.name,
       price: product.price,
@@ -850,12 +1187,13 @@ const addToCart = (product) => {
       stock: product.stock,
       is_service: product.is_service,
       quantity: initialQty, 
-      discount: 0 
+      discount: 0,
+      discountType: 'percent' // default to percent
     })
   }
 }
 
-// Barcode Scan Handler
+// Barcode Scan Handler (input-based, clears searchQuery)
 const handleScan = (e) => {
   const code = e.target.value.trim()
   const product = products.value.find(p => p.code.toLowerCase() === code.toLowerCase())
@@ -863,14 +1201,54 @@ const handleScan = (e) => {
     addToCart(product)
   }
   e.target.value = ''
+  searchQuery.value = ''  // FIX: reset v-model so the product grid shows all items again
+}
+
+// Global barcode scanner listener (works without focus, handles USB laser scanners)
+let scanBuffer = ''
+let scanTimer = null
+const onGlobalKeydown = (e) => {
+  // Ignore if user is actively typing in a real input/textarea/select
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName)) return
+
+  if (e.key === 'Enter') {
+    if (scanBuffer.length >= 3) {
+      const product = products.value.find(p => p.code.toLowerCase() === scanBuffer.toLowerCase())
+      if (product) addToCart(product)
+    }
+    scanBuffer = ''
+    return
+  }
+  // Only accumulate printable characters
+  if (e.key.length === 1) {
+    scanBuffer += e.key
+  }
+  if (scanTimer) clearTimeout(scanTimer)
+  scanTimer = setTimeout(() => { scanBuffer = '' }, 80) // scanners emit chars in <50ms
+}
+
+onMounted(() => window.addEventListener('keydown', onGlobalKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onGlobalKeydown))
+
+// Cart clear with confirmation
+const confirmClearCart = async () => {
+  if (cart.value.length === 0) return
+  const result = await showConfirm(`Clear all ${cart.value.length} item(s) from the cart?`, 'Clear Cart')
+  if (result.isConfirmed) cart.value = []
 }
 
 // TASK 3 & TASK 4: Streamlined checkout & Non-blocking receipt preview
 const processCheckout = () => {
   if (cart.value.length === 0) return
+  if (paymentMethod.value === 'cash' && isCashUnderpaid.value) return
 
-  const invoiceNo = `INV-${Math.floor(100000 + Math.random() * 900000)}`
-  const saleDate = new Date().toLocaleString()
+  // Monotonic invoice counter (no collision risk)
+  const storedCounter = parseInt(localStorage.getItem('bpas_invoice_counter') || '0')
+  const newCounter = storedCounter + 1
+  localStorage.setItem('bpas_invoice_counter', String(newCounter))
+  const invoiceNo = `INV-${String(newCounter).padStart(6, '0')}`
+  const createdAt = new Date().toISOString()   // ISO 8601 — sortable and filterable
+  const saleDate = new Date().toLocaleString() // human-readable for display
   const custName = checkoutForm.value.customer_name.trim() || 'Walk-in Customer'
   const custPhone = checkoutForm.value.customer_phone.trim() || ''
   const isPending = checkoutForm.value.sale_status_id === 2
@@ -878,6 +1256,13 @@ const processCheckout = () => {
   const finalTotalUSD = cartTotal.value
   const finalTotalKHR = cartTotalKHR.value
   const frozenItems = JSON.parse(JSON.stringify(cart.value))
+
+  const isCash = paymentMethod.value === 'cash'
+  const finalPaymentMethod = isCash ? 'Cash' : 'ABA / KHQR'
+  const tenderedUSD = isCash ? (parseFloat(cashReceivedUSD.value) || 0) : finalTotalUSD
+  const tenderedKHR = isCash ? (parseFloat(cashReceivedKHR.value) || 0) : 0
+  const changeUSD = isCash ? changeDueUSD.value : 0
+  const changeKHR = isCash ? changeDueKHR.value : 0
 
   // 1. Decrement Stock (TASK 5)
   decrementStock(cart.value)
@@ -887,18 +1272,24 @@ const processCheckout = () => {
     id: Date.now(),
     reference_no: invoiceNo,
     date: saleDate,
+    createdAt,              // ISO 8601 for sorting/filtering
     items: frozenItems,
     total: finalTotalUSD,
     totalKHR: finalTotalKHR,
     subtotal: cartSubtotal.value,
     itemDiscounts: cartItemDiscounts.value,
     globalDiscount: globalDiscount.value,
+    globalDiscountType: globalDiscountType.value,
     sale_status_id: checkoutForm.value.sale_status_id,
     sale_status: isPending ? 'Pending / Tailoring' : 'Completed (Handed Over)',
     payment_status_id: 1,
     payment_status: 'Paid',
-    payment_method_id: 3,
-    payment_method: 'ABA / KHQR',
+    payment_method_id: isCash ? 1 : 3,
+    payment_method: finalPaymentMethod,
+    cash_tendered_usd: tenderedUSD,
+    cash_tendered_khr: tenderedKHR,
+    change_usd: changeUSD,
+    change_khr: changeKHR,
     customer_name: custName,
     customer_phone: custPhone,
     created_by: 'Admin User',
@@ -917,7 +1308,11 @@ const processCheckout = () => {
     globalDiscount: globalDiscount.value,
     total: finalTotalUSD,
     totalKHR: finalTotalKHR,
-    paymentMethod: 'ABA / KHQR',
+    paymentMethod: finalPaymentMethod,
+    cashTenderedUSD: tenderedUSD,
+    cashTenderedKHR: tenderedKHR,
+    changeUSD: changeUSD,
+    changeKHR: changeKHR,
     saleStatus: isPending ? 'Pending / Tailoring' : 'Handed Over',
     customerName: custName,
     customerPhone: custPhone
@@ -936,9 +1331,13 @@ const triggerPrint = () => {
 const startNewOrder = () => {
   cart.value = []
   globalDiscount.value = 0
+  globalDiscountType.value = 'percent'
   checkoutForm.value.customer_name = ''
   checkoutForm.value.customer_phone = ''
   checkoutForm.value.sale_status_id = 1
+  paymentMethod.value = 'khqr'
+  cashReceivedUSD.value = null
+  cashReceivedKHR.value = null
   showSpecialOrderAccordion.value = false
   showReceiptModal.value = false
 }

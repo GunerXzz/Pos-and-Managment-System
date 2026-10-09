@@ -9,12 +9,12 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Add Product</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Create a new product in the inventory</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Create a new product or boutique fabric in the catalog</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-6 md:p-8">
+    <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-6 md:p-8 max-w-4xl">
       <form @submit.prevent="submitForm" class="space-y-6">
         
         <!-- Basic -->
@@ -22,96 +22,161 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Product Name <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. Premium Silk" required />
+            <input 
+              v-model="productForm.name" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              placeholder="e.g. Royal Golden Silk" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Category <span class="text-themeRed">*</span></label>
-            <select v-model="selectedCategory" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
+            <select 
+              v-model="productForm.category_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
               <option value="">Select Category</option>
-              <option v-for="cat in mainCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-            </select>
-          </div>
-          <div v-if="childCategories.length > 0">
-            <label class="block text-sm font-bold mb-2">Sub-Category</label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="">Select Sub-Category</option>
-              <option v-for="sub in childCategories" :key="sub.id" :value="sub.id">{{ sub.name }}</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }} ({{ cat.code }})</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Product Code <span class="text-themeRed">*</span></label>
-            <input type="text" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="e.g. PRD-1001" required />
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-sm font-bold">Product Code / SKU <span class="text-themeRed">*</span></label>
+              <button 
+                type="button" 
+                @click="generateRandomSku" 
+                class="text-xs text-themeGold hover:underline font-bold cursor-pointer"
+              >
+                ⚡ Auto Generate
+              </button>
+            </div>
+            <input 
+              v-model="productForm.code" 
+              type="text" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono uppercase" 
+              placeholder="e.g. FAB-1001" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Barcode Type</label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="">Select Type</option>
-              <option v-for="type in mockBarcodeTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
+            <select 
+              v-model="productForm.barcode_type_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark"
+            >
+              <option :value="1">CODE128</option>
+              <option :value="2">EAN13</option>
+              <option :value="3">UPC-A</option>
+              <option :value="4">QR Code</option>
             </select>
           </div>
           <div class="col-span-1 md:col-span-2 mt-2 flex items-center gap-2">
-            <input type="checkbox" id="is_service" class="w-4 h-4 text-themeRed border-gray-300 rounded focus:ring-themeRed" />
-            <label for="is_service" class="text-sm font-bold cursor-pointer">This is a Service (e.g. Tailoring)</label>
+            <input 
+              type="checkbox" 
+              id="is_service" 
+              v-model="productForm.is_service" 
+              class="w-4 h-4 text-themeRed border-gray-300 rounded focus:ring-themeRed" 
+            />
+            <label for="is_service" class="text-sm font-bold cursor-pointer">This is a Service (e.g. Tailoring, Custom Cutting)</label>
           </div>
         </div>
 
-        <!-- Units -->
-        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Units & Pricing</h2>
+        <!-- Units & Pricing -->
+        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Units, Stock & Pricing</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label class="block text-sm font-bold mb-2">Base Unit <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
+            <select 
+              v-model="productForm.sale_unit" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" 
+              required
+            >
               <option value="">Select Unit</option>
-              <option v-for="unit in mockUnits" :key="unit.id" :value="unit.id">{{ unit.name }} ({{ unit.code }})</option>
+              <option v-for="unit in units" :key="unit.id" :value="unit.id">
+                {{ unit.name }} ({{ unit.code }})
+              </option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Purchase Unit</label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="">Select Unit</option>
-              <option v-for="unit in mockUnits" :key="unit.id" :value="unit.id">{{ unit.name }} ({{ unit.code }})</option>
+            <select 
+              v-model="productForm.purchase_unit" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark"
+            >
+              <option value="">Same as Base Unit</option>
+              <option v-for="unit in units" :key="unit.id" :value="unit.id">
+                {{ unit.name }} ({{ unit.code }})
+              </option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Sale Unit <span class="text-themeRed">*</span></label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" required>
-              <option value="">Select Unit</option>
-              <option v-for="unit in mockUnits" :key="unit.id" :value="unit.id">{{ unit.name }} ({{ unit.code }})</option>
-            </select>
+            <label class="block text-sm font-bold mb-2">Initial Stock <span class="text-themeRed">*</span></label>
+            <input 
+              v-model.number="productForm.stock" 
+              type="number" 
+              step="any" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              placeholder="e.g. 50.5" 
+              required 
+            />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Cost (Purchase Price) <span class="text-themeRed">*</span></label>
-            <input type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="0.00" required />
+            <label class="block text-sm font-bold mb-2">Cost (Purchase Price $) <span class="text-themeRed">*</span></label>
+            <input 
+              v-model.number="productForm.cost" 
+              type="number" 
+              step="0.01" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              placeholder="0.00" 
+              required 
+            />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Price (Selling Price) <span class="text-themeRed">*</span></label>
-            <input type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="0.00" required />
+            <label class="block text-sm font-bold mb-2">Price (Selling Price $) <span class="text-themeRed">*</span></label>
+            <input 
+              v-model.number="productForm.price" 
+              type="number" 
+              step="0.01" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              placeholder="0.00" 
+              required 
+            />
           </div>
           <div>
             <label class="block text-sm font-bold mb-2">Alert Quantity</label>
-            <input type="number" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark" placeholder="10" />
+            <input 
+              v-model.number="productForm.alert_quantity" 
+              type="number" 
+              step="any" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark font-mono" 
+              placeholder="10" 
+            />
           </div>
         </div>
 
-        <!-- AI -->
-        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Media & Attributes</h2>
+        <!-- Color & Swatches -->
+        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Fabric Swatch & Color</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-sm font-bold mb-2">Product Image</label>
-            <div class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500 hover:border-themeGold transition cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span class="text-sm font-bold">Click to upload image</span>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-bold mb-2">Color</label>
-            <select class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark">
-              <option value="">Select Color</option>
-              <option v-for="color in mockColors" :key="color.id" :value="color.id">{{ color.name }}</option>
+            <label class="block text-sm font-bold mb-2">Color Swatch</label>
+            <select 
+              v-model="productForm.color_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark"
+            >
+              <option value="">No Color / Default</option>
+              <option v-for="color in colors" :key="color.id" :value="color.id">
+                {{ color.name }} ({{ color.code }})
+              </option>
             </select>
-            <p class="text-xs text-gray-500 mt-2">Color tags can be auto-extracted if an image is uploaded (AI Feature).</p>
+          </div>
+          <div v-if="selectedColorObject" class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="w-10 h-10 rounded-full border border-gray-300 shadow-sm" :style="{ backgroundColor: selectedColorObject.code }"></div>
+            <div>
+              <p class="text-sm font-bold">{{ selectedColorObject.name }}</p>
+              <p class="text-xs text-gray-500 font-mono">{{ selectedColorObject.code }}</p>
+            </div>
           </div>
         </div>
 
@@ -120,7 +185,7 @@
           <NuxtLink to="/inventory" class="px-6 py-2 rounded-lg font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Cancel
           </NuxtLink>
-          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition">
+          <button type="submit" class="bg-themeRed hover:bg-red-800 text-white px-8 py-2 rounded-lg font-bold shadow-md transition cursor-pointer">
             Save Product
           </button>
         </div>
@@ -133,50 +198,70 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePosState } from '~/composables/usePosState'
 
 const router = useRouter()
+const { categories, units, colors, addProduct } = usePosState()
+const { showAlert } = useUiAlert()
 
-const mockCategories = ref([
-  { id: 1, name: 'Silk', parent_id: null },
-  { id: 2, name: 'Premium Silk', parent_id: 1 },
-  { id: 3, name: 'Cotton', parent_id: null },
-  { id: 4, name: 'Thread', parent_id: null },
-  { id: 5, name: 'Raw Cotton', parent_id: 3 },
-])
-
-const mockUnits = ref([
-  { id: 1, name: 'Meter', code: 'm' },
-  { id: 2, name: 'Piece', code: 'pc' },
-  { id: 3, name: 'Roll', code: 'roll' },
-  { id: 4, name: 'Kben', code: 'kben' }
-])
-
-const mockColors = ref([
-  { id: 1, name: 'Crimson', code: '#DC143C' },
-  { id: 2, name: 'Gold', code: '#FFD700' },
-  { id: 3, name: 'White', code: '#FFFFFF' },
-  { id: 4, name: 'Dark Red', code: '#8B0000' }
-])
-
-const mockBarcodeTypes = ref([
-  { id: 1, name: 'CODE128' },
-  { id: 2, name: 'EAN13' },
-  { id: 3, name: 'UPC-A' },
-  { id: 4, name: 'QR' }
-])
-
-const selectedCategory = ref('')
-
-const mainCategories = computed(() => {
-  return mockCategories.value.filter(c => c.parent_id === null)
+const productForm = ref({
+  name: '',
+  code: '',
+  category_id: '',
+  barcode_type_id: 1,
+  is_service: false,
+  sale_unit: '',
+  purchase_unit: '',
+  stock: null,
+  cost: null,
+  price: null,
+  alert_quantity: null,
+  color_id: ''
 })
 
-const childCategories = computed(() => {
-  if (!selectedCategory.value) return []
-  return mockCategories.value.filter(c => c.parent_id === selectedCategory.value)
+const generateRandomSku = () => {
+  productForm.value.code = `PRD-${Math.floor(1000 + Math.random() * 9000)}`
+}
+
+const selectedColorObject = computed(() => {
+  if (!productForm.value.color_id) return null
+  return colors.value.find(c => c.id === Number(productForm.value.color_id))
 })
 
 const submitForm = () => {
+  if (!productForm.value.name || !productForm.value.code || !productForm.value.category_id || !productForm.value.sale_unit) {
+    showAlert("Please fill in all required fields", "Incomplete Form", "warning")
+    return
+  }
+
+  const selectedUnit = units.value.find(u => u.id === Number(productForm.value.sale_unit))
+  const selectedCat = categories.value.find(c => c.id === Number(productForm.value.category_id))
+  const selectedClr = selectedColorObject.value
+
+  const newProduct = {
+    id: Date.now(),
+    name: productForm.value.name.trim(),
+    code: productForm.value.code.trim().toUpperCase(),
+    category_id: Number(productForm.value.category_id),
+    category: selectedCat ? selectedCat.name : 'Fabrics',
+    unit: selectedUnit ? selectedUnit.code : 'm',
+    sale_unit: Number(productForm.value.sale_unit),
+    purchase_unit: productForm.value.purchase_unit ? Number(productForm.value.purchase_unit) : Number(productForm.value.sale_unit),
+    stock: Number(productForm.value.stock) || 0,
+    cost: Number(productForm.value.cost) || 0,
+    price: Number(productForm.value.price) || 0,
+    alert_quantity: Number(productForm.value.alert_quantity) || 5,
+    barcode_type_id: Number(productForm.value.barcode_type_id) || 1,
+    is_service: productForm.value.is_service ? 1 : 0,
+    color_id: selectedClr ? selectedClr.id : null,
+    colorName: selectedClr ? selectedClr.name : '',
+    colorCode: selectedClr ? selectedClr.code : '',
+    image: '',
+    isPinned: false
+  }
+
+  addProduct(newProduct)
+  showAlert(`"${newProduct.name}" added to inventory successfully!`, "Success", "success")
   router.push('/inventory')
 }
 </script>

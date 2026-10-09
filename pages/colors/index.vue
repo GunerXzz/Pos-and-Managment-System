@@ -21,7 +21,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="mockColors.length === 0">
+            <tr v-if="colors.length === 0">
               <td colspan="5" class="p-8 text-center text-gray-400">
                 <div class="flex flex-col items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,7 +32,7 @@
                 </div>
               </td>
             </tr>
-            <tr v-for="color in mockColors" :key="color.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
+            <tr v-for="color in colors" :key="color.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
               <td class="p-3 md:p-4 font-mono text-sm text-gray-500">#{{ color.id }}</td>
               <td class="p-3 md:p-4">
                 <div class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 shadow-sm" :style="{ backgroundColor: color.code }"></div>
@@ -41,11 +41,11 @@
               <td class="p-3 md:p-4 font-mono text-sm text-gray-600 dark:text-gray-400">{{ color.code }}</td>
               <td class="p-3 md:p-4 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <NuxtLink to="/colors/edit" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
+                  <NuxtLink :to="'/colors/edit?id=' + color.id" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     Edit
                   </NuxtLink>
-                  <button @click="deleteColor(color)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
+                  <button @click="handleDeleteColor(color)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     Delete
                   </button>
@@ -60,17 +60,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { usePosState } from '~/composables/usePosState'
 
-// Cleaned: Colors list is initially empty.
-// Add new colors via /colors/add or populate this array.
-const mockColors = ref([])
+const { colors, deleteColor } = usePosState()
+const { showConfirm, showAlert } = useUiAlert()
 
-const deleteColor = async (color) => {
-  const { showConfirm } = useUiAlert()
-  const result = await showConfirm(`Are you sure you want to delete color ${color.name}?`, "Delete Color")
+const handleDeleteColor = async (color) => {
+  const result = await showConfirm(`Are you sure you want to delete color "${color.name}"?`, "Delete Color")
   if (result.isConfirmed) {
-    mockColors.value = mockColors.value.filter(c => c.id !== color.id)
+    deleteColor(color.id)
+    showAlert(`Color "${color.name}" deleted successfully!`, "Deleted", "success")
   }
 }
 </script>
