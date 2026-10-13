@@ -79,7 +79,7 @@
                   {{ item.returned_quantity ? `${item.returned_quantity} ${item.unit}` : '-' }}
                 </td>
                 <td class="p-4 text-right font-bold text-themeGold font-mono">
-                  ${{ (item.price * item.quantity * (1 - (item.discount || 0) / 100)).toFixed(2) }}
+                  ${{ (item.discountType === 'fixed' ? Math.max(0, item.price * item.quantity - (item.discount || 0)) : (item.price * item.quantity * (1 - (item.discount || 0) / 100))).toFixed(2) }}
                 </td>
               </tr>
             </tbody>
@@ -183,6 +183,9 @@
               <p class="text-sm font-bold truncate text-gray-900 dark:text-white">{{ item.name }}</p>
               <p class="text-xs text-gray-500 font-mono">
                 ${{ item.price.toFixed(2) }}/{{ item.unit }} • Bought: {{ item.quantity }} {{ item.unit }}
+                <span v-if="item.discount > 0" class="text-emerald-600 dark:text-emerald-400 font-bold ml-1">
+                  (-{{ item.discountType === 'fixed' ? `$${item.discount.toFixed(2)}` : `${item.discount}%` }})
+                </span>
                 <span v-if="item.previously_returned > 0" class="text-red-500 font-bold ml-1">
                   (Returned: {{ item.previously_returned }})
                 </span>
@@ -245,11 +248,8 @@ const codeFormat = ref('both')
 const saleId = computed(() => route.query.id)
 
 const sale = computed(() => {
-  if (saleId.value) {
-    const found = sales.value.find(s => String(s.id) === String(saleId.value))
-    if (found) return found
-  }
-  return sales.value[0] || null
+  if (!saleId.value) return null
+  return sales.value.find(s => String(s.id) === String(saleId.value)) ?? null
 })
 
 const triggerPrint = () => {
@@ -272,6 +272,8 @@ const openReturnModal = () => {
       price: item.price,
       quantity: item.quantity,
       unit: item.unit,
+      discount: item.discount || 0,
+      discountType: item.discountType || 'percent',
       previously_returned: prevReturned,
       maxReturnable,
       returnQty: 0
@@ -283,7 +285,10 @@ const openReturnModal = () => {
 const calculatedRefundTotal = computed(() => {
   return returnItemsState.value.reduce((sum, item) => {
     const qty = Math.min(item.maxReturnable, Math.max(0, Number(item.returnQty) || 0))
-    return sum + (qty * item.price)
+    const effectiveUnitPrice = item.discountType === 'fixed'
+      ? Math.max(0, item.price - (item.discount || 0))
+      : item.price * (1 - ((item.discount || 0) / 100))
+    return sum + (qty * effectiveUnitPrice)
   }, 0)
 })
 
@@ -292,12 +297,17 @@ const submitReturn = () => {
 
   const itemsToReturn = returnItemsState.value
     .filter(item => Number(item.returnQty) > 0)
-    .map(item => ({
-      itemId: item.id,
-      productId: item.productId,
-      quantity: Number(item.returnQty),
-      refundAmount: Number(item.returnQty) * item.price
-    }))
+    .map(item => {
+      const effectiveUnitPrice = item.discountType === 'fixed'
+        ? Math.max(0, item.price - (item.discount || 0))
+        : item.price * (1 - ((item.discount || 0) / 100))
+      return {
+        itemId: item.id,
+        productId: item.productId,
+        quantity: Number(item.returnQty),
+        refundAmount: Number(item.returnQty) * effectiveUnitPrice
+      }
+    })
 
   if (itemsToReturn.length === 0) {
     showAlert("Please enter a return quantity greater than 0.", "Warning", "warning")

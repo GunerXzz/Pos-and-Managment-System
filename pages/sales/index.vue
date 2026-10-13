@@ -53,7 +53,7 @@
               </td>
               <td class="p-4 text-sm font-medium text-gray-700 dark:text-gray-200">{{ sale.created_by || 'Admin User' }}</td>
               <td class="p-4">
-                <span :class="sale.sale_status?.includes('Returned') ? 'bg-red-100 text-red-800 border-red-300' : (sale.sale_status === 'Completed' || sale.sale_status === 'Handed Over' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-yellow-100 text-yellow-800 border-yellow-300')" class="px-2.5 py-1 rounded text-xs font-bold uppercase border">
+                <span :class="sale.sale_status?.includes('Returned') ? 'bg-red-100 text-red-800 border-red-300' : (sale.sale_status === 'Completed' || sale.sale_status === 'Handed Over' || sale.sale_status === 'Completed (Handed Over)' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-yellow-100 text-yellow-800 border-yellow-300')" class="px-2.5 py-1 rounded text-xs font-bold uppercase border">
                   {{ sale.sale_status || 'Completed' }}
                 </span>
               </td>
@@ -247,7 +247,8 @@ const openReturnModal = (sale) => {
       productId: item.product_id,
       name: item.name,
       price: item.price,
-      discount: item.discount || 0,          // carry discount through for refund calc
+      discount: item.discount || 0,
+      discountType: item.discountType || 'percent',
       quantity: item.quantity,
       unit: item.unit,
       previously_returned: prevReturned,
@@ -261,8 +262,9 @@ const openReturnModal = (sale) => {
 const calculatedRefundTotal = computed(() => {
   return returnItemsState.value.reduce((sum, item) => {
     const qty = Math.min(item.maxReturnable, Math.max(0, Number(item.returnQty) || 0))
-    // FIX: use effective price after per-item discount (was using original price, causing over-refund)
-    const effectiveUnitPrice = item.price * (1 - ((item.discount || 0) / 100))
+    const effectiveUnitPrice = item.discountType === 'fixed'
+      ? Math.max(0, item.price - (item.discount || 0))
+      : item.price * (1 - ((item.discount || 0) / 100))
     return sum + (qty * effectiveUnitPrice)
   }, 0)
 })
@@ -272,13 +274,17 @@ const submitReturn = () => {
 
   const itemsToReturn = returnItemsState.value
     .filter(item => Number(item.returnQty) > 0)
-    .map(item => ({
-      itemId: item.id,
-      productId: item.productId,
-      quantity: Number(item.returnQty),
-      // FIX: pass discount-aware refund amount (not raw price)
-      refundAmount: Number(item.returnQty) * item.price * (1 - ((item.discount || 0) / 100))
-    }))
+    .map(item => {
+      const effectiveUnitPrice = item.discountType === 'fixed'
+        ? Math.max(0, item.price - (item.discount || 0))
+        : item.price * (1 - ((item.discount || 0) / 100))
+      return {
+        itemId: item.id,
+        productId: item.productId,
+        quantity: Number(item.returnQty),
+        refundAmount: Number(item.returnQty) * effectiveUnitPrice
+      }
+    })
 
   if (itemsToReturn.length === 0) {
     showAlert("Please enter a return quantity greater than 0.", "Warning", "warning")

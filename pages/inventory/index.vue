@@ -350,8 +350,6 @@ const filteredProducts = computed(() => {
   return list
 })
 
-const mockInventory = filteredProducts // alias kept so any other references don't break
-
 const toggleAll = (e) => {
   if (e.target.checked) {
     selectedProductsToPrint.value = [...filteredProducts.value]

@@ -557,19 +557,21 @@
               </div>
             </div>
           </div>
-        </div>
         
         <!-- Streamlined Checkout Button (TASK 2 & TASK 3) -->
         <button 
           @click="processCheckout"
-          :disabled="cart.length === 0 || (paymentMethod === 'cash' && isCashUnderpaid)"
-          :class="cart.length === 0 || (paymentMethod === 'cash' && isCashUnderpaid) ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-themeRed hover:bg-red-800 cursor-pointer'"
+          :disabled="cart.length === 0 || (paymentMethod === 'cash' && isCashUnderpaid) || isProcessing"
+          :class="cart.length === 0 || (paymentMethod === 'cash' && isCashUnderpaid) || isProcessing ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-themeRed hover:bg-red-800 cursor-pointer'"
           class="w-full text-white py-3 rounded-xl font-bold text-base transition shadow-md flex items-center justify-center gap-2 active:scale-[0.99]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-themeGold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span v-if="paymentMethod === 'cash' && isCashUnderpaid">
+          <span v-if="isProcessing">
+            Processing Sale...
+          </span>
+          <span v-else-if="paymentMethod === 'cash' && isCashUnderpaid">
             Enter Cash Tendered (${{ cartTotal.toFixed(2) }})
           </span>
           <span v-else>
@@ -644,11 +646,13 @@
                 <p class="font-bold text-gray-800 dark:text-gray-200">{{ item.name }}</p>
                 <p class="text-[10px] text-gray-400 font-mono">
                   {{ item.quantity }}{{ item.unit }} @ ${{ item.price.toFixed(2) }}
-                  <span v-if="item.discount > 0" class="text-red-500">(-{{ item.discount }}%)</span>
+                  <span v-if="item.discount > 0" class="text-red-500">
+                    (-{{ item.discountType === 'fixed' ? `$${item.discount.toFixed(2)}` : `${item.discount}%` }})
+                  </span>
                 </p>
               </div>
               <span class="font-bold text-gray-900 dark:text-white">
-                ${{ ((item.price * item.quantity) * (1 - (item.discount || 0) / 100)).toFixed(2) }}
+                ${{ (item.discountType === 'fixed' ? Math.max(0, item.price * item.quantity - (item.discount || 0)) : ((item.price * item.quantity) * (1 - (item.discount || 0) / 100))).toFixed(2) }}
               </span>
             </div>
           </div>
@@ -656,8 +660,9 @@
           <!-- Totals (USD & KHR) -->
           <div class="space-y-1 text-xs">
             <div v-if="completedInvoice.globalDiscount > 0" class="flex justify-between text-themeRed dark:text-red-400 font-semibold">
-              <span>Order Discount ({{ completedInvoice.globalDiscount }}%):</span>
-              <span>-${{ ((completedInvoice.subtotal - completedInvoice.itemDiscounts) * (completedInvoice.globalDiscount / 100)).toFixed(2) }}</span>
+              <span v-if="completedInvoice.globalDiscountType === 'fixed'">Order Discount (-${{ Number(completedInvoice.globalDiscount).toFixed(2) }}):</span>
+              <span v-else>Order Discount ({{ completedInvoice.globalDiscount }}%):</span>
+              <span>-${{ (completedInvoice.globalDiscountType === 'fixed' ? Math.min(Number(completedInvoice.globalDiscount), Math.max(0, completedInvoice.subtotal - completedInvoice.itemDiscounts)) : ((completedInvoice.subtotal - completedInvoice.itemDiscounts) * (completedInvoice.globalDiscount / 100))).toFixed(2) }}</span>
             </div>
             <div class="flex justify-between items-baseline pt-2 border-t-2 border-gray-300 dark:border-gray-700">
               <span class="text-sm font-black uppercase text-gray-800 dark:text-gray-200">Grand Total</span>
@@ -779,7 +784,7 @@
           </div>
           <div v-for="item in (completedInvoice.items.length ? completedInvoice.items : cart)" :key="'store-'+item.id" class="flex justify-between text-xs mb-1">
             <span class="w-3/5 truncate">{{ item.name }} ({{ item.quantity }}{{ item.unit }})</span>
-            <span>${{ ((item.price * item.quantity) * (1 - (item.discount || 0) / 100)).toFixed(2) }}</span>
+            <span>${{ (item.discountType === 'fixed' ? Math.max(0, item.price * item.quantity - (item.discount || 0)) : ((item.price * item.quantity) * (1 - (item.discount || 0) / 100))).toFixed(2) }}</span>
           </div>
         </div>
 
@@ -839,7 +844,7 @@
           </div>
           <div v-for="item in (completedInvoice.items.length ? completedInvoice.items : cart)" :key="'cust-'+item.id" class="flex justify-between text-xs mb-2 border-b border-gray-100 pb-1">
             <span class="w-3/5 truncate">{{ item.name }} <span class="text-gray-400">x{{ item.quantity }}{{ item.unit }}</span></span>
-            <span class="font-semibold">${{ ((item.price * item.quantity) * (1 - (item.discount || 0) / 100)).toFixed(2) }}</span>
+            <span class="font-semibold">${{ (item.discountType === 'fixed' ? Math.max(0, item.price * item.quantity - (item.discount || 0)) : ((item.price * item.quantity) * (1 - (item.discount || 0) / 100))).toFixed(2) }}</span>
           </div>
         </div>
 
@@ -915,18 +920,6 @@
       </div>
     </div>
 
-    <!-- GLOBAL DISCOUNT MODAL -->
-    <div v-if="showGlobalDiscountModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-2xl w-full max-w-sm overflow-hidden p-5 border border-gray-200 dark:border-gray-800">
-        <h3 class="text-lg font-bold mb-4 dark:text-white">Order Discount</h3>
-        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Discount Percentage (%)</label>
-        <input type="number" step="1" min="0" max="100" v-model.number="globalDiscount" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-[#252936] dark:text-white focus:outline-none focus:border-themeRed mb-4" />
-        <div class="flex gap-3 justify-end">
-          <button @click="showGlobalDiscountModal = false" class="px-4 py-2 text-gray-600 dark:text-gray-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition text-xs">Cancel</button>
-          <button @click="showGlobalDiscountModal = false" class="px-4 py-2 bg-themeRed hover:bg-red-800 text-white rounded-lg font-bold transition text-xs">Apply</button>
-        </div>
-      </div>
-    </div>
 
     <!-- EDIT ITEM MODAL: now only used for custom unit price override -->
     <div v-if="showEditItemModal && editingItem" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -1067,7 +1060,7 @@ const checkoutForm = ref({
 const showHistory = ref(false)
 const globalDiscount = ref(0)
 const globalDiscountType = ref('percent') // 'percent' or 'fixed'
-const showGlobalDiscountModal = ref(false) // kept for backward compat but no longer needed
+const isProcessing = ref(false)
 const editingItem = ref(null)
 const showEditItemModal = ref(false)
 
@@ -1219,12 +1212,12 @@ const onGlobalKeydown = (e) => {
     scanBuffer = ''
     return
   }
-  // Only accumulate printable characters
-  if (e.key.length === 1) {
+  // Only accumulate printable characters (ignoring shortcut modifiers like Ctrl/Alt)
+  if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
     scanBuffer += e.key
   }
   if (scanTimer) clearTimeout(scanTimer)
-  scanTimer = setTimeout(() => { scanBuffer = '' }, 80) // scanners emit chars in <50ms
+  scanTimer = setTimeout(() => { scanBuffer = '' }, 150) // scanners emit chars in <50ms
 }
 
 onMounted(() => window.addEventListener('keydown', onGlobalKeydown))
@@ -1239,8 +1232,11 @@ const confirmClearCart = async () => {
 
 // TASK 3 & TASK 4: Streamlined checkout & Non-blocking receipt preview
 const processCheckout = () => {
+  if (isProcessing.value) return
   if (cart.value.length === 0) return
   if (paymentMethod.value === 'cash' && isCashUnderpaid.value) return
+
+  isProcessing.value = true
 
   // Monotonic invoice counter (no collision risk)
   const storedCounter = parseInt(localStorage.getItem('bpas_invoice_counter') || '0')
@@ -1281,7 +1277,7 @@ const processCheckout = () => {
     globalDiscount: globalDiscount.value,
     globalDiscountType: globalDiscountType.value,
     sale_status_id: checkoutForm.value.sale_status_id,
-    sale_status: isPending ? 'Pending / Tailoring' : 'Completed (Handed Over)',
+    sale_status: isPending ? 'Pending / Tailoring' : 'Handed Over',
     payment_status_id: 1,
     payment_status: 'Paid',
     payment_method_id: isCash ? 1 : 3,
@@ -1306,6 +1302,7 @@ const processCheckout = () => {
     subtotal: cartSubtotal.value,
     itemDiscounts: cartItemDiscounts.value,
     globalDiscount: globalDiscount.value,
+    globalDiscountType: globalDiscountType.value,
     total: finalTotalUSD,
     totalKHR: finalTotalKHR,
     paymentMethod: finalPaymentMethod,
@@ -1329,6 +1326,7 @@ const triggerPrint = () => {
 
 // Start New Order (Reset)
 const startNewOrder = () => {
+  isProcessing.value = false
   cart.value = []
   globalDiscount.value = 0
   globalDiscountType.value = 'percent'
@@ -1344,7 +1342,6 @@ const startNewOrder = () => {
 
 // Re-checkout past sale
 const editPastSale = async (pastSale) => {
-  const { showConfirm } = useUiAlert()
   if (cart.value.length > 0) {
     const result = await showConfirm("Current cart will be replaced with this past sale. Continue?", "Warning")
     if (!result.isConfirmed) return
