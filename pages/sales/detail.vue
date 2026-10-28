@@ -18,8 +18,9 @@
         </div>
       </div>
       <div v-if="sale" class="flex gap-2 md:gap-4 w-full md:w-auto">
-        <button @click="triggerPrint" class="flex-1 md:flex-none bg-gray-100 dark:bg-[#1A1D26] hover:bg-gray-200 dark:hover:bg-[#252936] border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-lg font-bold shadow-sm transition whitespace-nowrap cursor-pointer">
-          🖨️ Print
+        <button @click="triggerPrint" class="flex-1 md:flex-none bg-gray-100 dark:bg-[#1A1D26] hover:bg-gray-200 dark:hover:bg-[#252936] border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 px-6 py-2 rounded-lg font-bold shadow-sm transition whitespace-nowrap cursor-pointer flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+          <span>Print Invoice</span>
         </button>
         <button @click="openReturnModal" class="flex-1 md:flex-none bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-sm transition whitespace-nowrap border border-red-900 cursor-pointer">
           Process Return
@@ -28,6 +29,19 @@
     </div>
 
     <div v-if="sale" class="print:block">
+      <!-- Boutique Official Header -->
+      <div class="mb-6 p-4 rounded-xl bg-white dark:bg-[#1A1D26] border border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="font-serif font-black text-xl text-themeRed dark:text-red-400 uppercase tracking-widest leading-tight">PIDAN KHMER SILK</h2>
+          <p class="font-serif text-xs text-themeGold font-bold">ពិតានសូត្រខ្មែរ • Authentic Cambodian Sacred Silk</p>
+          <p class="text-xs text-gray-500 mt-1">#18 Samdach Sothearos Blvd, Phnom Penh | Tel: +855 23 998 877</p>
+        </div>
+        <div class="text-left sm:text-right">
+          <div class="text-xs font-mono uppercase text-gray-400 font-bold">Official Invoice</div>
+          <div class="text-lg font-mono font-bold text-gray-900 dark:text-white">#{{ sale.reference_no }}</div>
+          <div class="text-xs text-gray-500">{{ sale.date }} {{ sale.time || '' }}</div>
+        </div>
+      </div>
       <!-- Status Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 print:hidden">
         <div class="bg-white dark:bg-[#1A1D26] p-4 rounded-xl shadow border border-gray-200 dark:border-gray-800 flex flex-col">

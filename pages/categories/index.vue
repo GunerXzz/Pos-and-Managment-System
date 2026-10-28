@@ -1,62 +1,128 @@
 <template>
-  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-themeDark text-gray-900 dark:text-gray-100">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b-2 border-themeGold pb-4 gap-4">
+  <div class="p-4 md:p-8 space-y-6">
+    <!-- Header with Breadcrumbs & Action -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold dark:text-white">{{ $t('categories') }}</h1>
-        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Organize products into groups or sub-groups</p>
+        <div class="flex items-center gap-2 text-xs text-stone-400 mb-1">
+          <span>Catalog</span>
+          <span>/</span>
+          <span class="text-stone-700 dark:text-stone-300 font-medium">Categories</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-serif font-black tracking-tight text-stone-900 dark:text-stone-100">
+          Product Categories
+        </h1>
+        <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
+          Organize boutique fabrics, silks, and tailoring items into hierarchies
+        </p>
       </div>
-      <NuxtLink to="/categories/add" class="w-full md:w-auto bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-md transition flex justify-center items-center gap-2 whitespace-nowrap">
-        + Add Category
-      </NuxtLink>
+
+      <div class="flex items-center gap-2">
+        <NuxtLink 
+          to="/categories/add" 
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A1A24] hover:bg-[#94222E] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all btn-press cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Add Category</span>
+        </NuxtLink>
+      </div>
     </div>
 
-    <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
-      <div class="overflow-x-auto h-full">
+    <!-- Main Card Container -->
+    <div class="bg-white dark:bg-[#1A181C] rounded-3xl border border-stone-200/70 dark:border-stone-800/80 shadow-xs overflow-hidden">
+      <!-- Toolbar & Search -->
+      <div class="p-4 sm:p-5 border-b border-stone-200/70 dark:border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="relative w-full sm:w-80">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="Search categories..." 
+            class="w-full pl-9 pr-4 py-2 text-xs rounded-full border border-stone-200/80 dark:border-stone-700/80 bg-stone-50 dark:bg-stone-900/60 text-stone-800 dark:text-stone-200 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#C5A059]/40 transition"
+          />
+        </div>
+
+        <div class="text-xs text-stone-400 font-mono">
+          Showing <strong>{{ filteredCategories.length }}</strong> of {{ categories.length }} categories
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse whitespace-nowrap">
-          <thead class="bg-white dark:bg-[#1A1D26] text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
+          <thead class="bg-stone-50/70 dark:bg-stone-900/40 text-stone-500 dark:text-stone-400 border-b border-stone-200/60 dark:border-stone-800/60">
             <tr>
-              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Code</th>
-              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Category Name</th>
-              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Parent Category</th>
-              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Status</th>
-              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs text-right">Actions</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px]">Code</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px]">Category Name</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px]">Parent Category</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px]">Status</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px] text-right">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-if="categories.length === 0">
-              <td colspan="5" class="p-8 text-center text-gray-400">
-                <div class="flex flex-col items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                  </svg>
-                  <p class="font-bold text-sm text-gray-500">No categories found</p>
-                  <p class="text-xs text-gray-400 mt-1">Click "+ Add Category" to create your first category</p>
+          <tbody class="divide-y divide-stone-100 dark:divide-stone-800/60">
+            <tr v-if="filteredCategories.length === 0">
+              <td colspan="5" class="py-12 px-6 text-center text-stone-400">
+                <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                  <div class="w-12 h-12 rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-400 flex items-center justify-center mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                  </div>
+                  <p class="font-bold text-sm text-stone-700 dark:text-stone-300">No categories found</p>
+                  <p class="text-xs text-stone-400 mt-1">Create categories to segment silk fabrics, cottons, laces, and tailoring services.</p>
                 </div>
               </td>
             </tr>
-            <tr v-for="cat in categories" :key="cat.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition">
-              <td class="p-3 md:p-4 text-themeRed dark:text-red-400 font-mono font-bold">{{ cat.code }}</td>
-              <td class="p-3 md:p-4 font-bold text-gray-800 dark:text-gray-100">{{ cat.name }}</td>
-              <td class="p-3 md:p-4">
-                <span v-if="cat.parent_id" class="text-sm font-mono bg-gray-100 dark:bg-[#252936] px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+
+            <tr 
+              v-for="cat in filteredCategories" 
+              :key="cat.id" 
+              class="hover:bg-stone-50/80 dark:hover:bg-stone-800/40 transition-colors"
+            >
+              <td class="py-3.5 px-5 font-mono font-bold text-xs text-[#7A1A24] dark:text-[#E6C98A]">
+                {{ cat.code }}
+              </td>
+              <td class="py-3.5 px-5 font-bold text-stone-800 dark:text-stone-100 text-xs sm:text-sm">
+                {{ cat.name }}
+              </td>
+              <td class="py-3.5 px-5">
+                <span v-if="cat.parent_id" class="text-xs font-mono bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 px-2.5 py-1 rounded-full border border-stone-200 dark:border-stone-700">
                   {{ getParentCategoryName(cat.parent_id) }}
                 </span>
-                <span v-else class="text-xs font-bold text-gray-400 uppercase tracking-widest">- Top Level -</span>
+                <span v-else class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">- Top Level -</span>
               </td>
-              <td class="p-3 md:p-4">
-                <span :class="[cat.status === 'Active' ? 'text-themeGold bg-gray-100 dark:bg-[#252936] border-gray-200 dark:border-gray-700' : 'text-red-600 bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800']" class="px-2 py-1 rounded text-xs font-bold uppercase border">
+              <td class="py-3.5 px-5">
+                <span 
+                  :class="cat.status === 'Active' 
+                    ? 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60' 
+                    : 'text-rose-600 bg-rose-50 dark:bg-rose-950/40 dark:text-rose-300 border-rose-200 dark:border-rose-800/60'"
+                  class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border"
+                >
                   {{ cat.status }}
                 </span>
               </td>
-              <td class="p-3 md:p-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                  <NuxtLink :to="'/categories/edit?id=' + cat.id" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                    Edit
+              <td class="py-3.5 px-5 text-right">
+                <div class="flex items-center justify-end gap-1.5">
+                  <NuxtLink 
+                    :to="'/categories/edit?id=' + cat.id" 
+                    class="px-3 py-1 text-xs font-bold rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 border border-amber-500/20 transition-all btn-press inline-flex items-center gap-1"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span>Edit</span>
                   </NuxtLink>
-                  <button @click="handleDeleteCategory(cat)" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 border border-red-500/20 transition inline-flex items-center gap-1 uppercase tracking-wider cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    Delete
+                  <button 
+                    @click="handleDeleteCategory(cat)" 
+                    class="px-3 py-1 text-xs font-bold rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-all btn-press inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <span>Delete</span>
                   </button>
                 </div>
               </td>
@@ -69,10 +135,23 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { usePosState } from '~/composables/usePosState'
+import { useUiAlert } from '~/composables/useUiAlert'
 
 const { categories, deleteCategory } = usePosState()
 const { showConfirm, showAlert } = useUiAlert()
+
+const searchQuery = ref('')
+
+const filteredCategories = computed(() => {
+  if (!searchQuery.value.trim()) return categories.value
+  const q = searchQuery.value.toLowerCase().trim()
+  return categories.value.filter(c => 
+    c.name.toLowerCase().includes(q) || 
+    c.code.toLowerCase().includes(q)
+  )
+})
 
 const getParentCategoryName = (parentId) => {
   const found = categories.value.find(c => c.id === parentId)

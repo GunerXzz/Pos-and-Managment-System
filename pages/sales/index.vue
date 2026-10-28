@@ -1,20 +1,23 @@
 <template>
-  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100 overflow-y-auto">
+  <div class="p-4 md:p-8 h-full flex flex-col bg-[#F6F3EE] dark:bg-[#121013] text-stone-900 dark:text-stone-100 overflow-y-auto">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b-2 border-themeGold pb-4 gap-4 print:hidden">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 pb-2 gap-4 print:hidden">
       <div>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">{{ $t('sales_list') }}</h1>
-        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Manage completed and pending orders</p>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight uppercase">{{ $t('sales_list') }}</h1>
+        <p class="text-xs md:text-sm text-stone-500 dark:text-stone-400 mt-0.5">Manage completed orders, receipts, and customer pickups</p>
       </div>
       <div class="flex relative w-full md:w-auto gap-2 md:gap-4">
-        <NuxtLink to="/pos" class="w-full md:w-auto bg-themeRed hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold shadow-md transition whitespace-nowrap text-center">
-          + New Sale (POS)
+        <NuxtLink to="/pos" class="w-full md:w-auto bg-[#7A1A24] hover:bg-[#94222E] text-white px-6 py-2.5 rounded-full font-bold shadow-md hover:shadow-lg transition-all btn-press whitespace-nowrap text-center inline-flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>+ New Sale (POS)</span>
         </NuxtLink>
       </div>
     </div>
 
-    <!-- Table -->
-    <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden flex flex-col print:hidden">
+    <!-- Table Card -->
+    <div class="bg-white dark:bg-[#1C181C] rounded-3xl shadow-xs border border-stone-200/70 dark:border-stone-800/80 flex-grow overflow-hidden flex flex-col print:hidden">
       <div class="overflow-x-auto flex-grow h-full">
         <table class="w-full text-left border-collapse whitespace-nowrap">
           <thead class="bg-white dark:bg-[#1A1D26] text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">

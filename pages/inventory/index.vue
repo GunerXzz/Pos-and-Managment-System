@@ -1,92 +1,100 @@
 <template>
-  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b-2 border-themeGold pb-4 gap-4">
+  <div class="p-4 md:p-8 h-full flex flex-col bg-[#F6F3EE] dark:bg-[#121013] text-stone-900 dark:text-stone-100">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 pb-2 gap-4">
       <div>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">{{ $t('inventory') }}</h1>
-        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Manage fabrics, laces, and tailoring materials</p>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight uppercase">{{ $t('inventory') }}</h1>
+        <p class="text-xs md:text-sm text-stone-500 dark:text-stone-400 mt-0.5">Manage Pidan silk, patterns, handwoven fabrics, and tailoring inventory</p>
       </div>
       <div class="flex flex-col sm:flex-row w-full md:w-auto gap-2">
         <div class="flex relative gap-2 w-full sm:w-auto">
-          <input type="text" v-model="searchQuery" placeholder="Search product or color..." class="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-themeGold bg-white dark:bg-[#252936]" />
-          <button @click="showFilter = !showFilter" class="px-4 py-2 bg-gray-100 dark:bg-[#252936] border-2 border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Smart Filter">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+          <input type="text" v-model="searchQuery" placeholder="Search product name, SKU or color..." class="w-full px-5 py-2.5 border border-stone-200/80 dark:border-stone-800 rounded-full focus:outline-none focus:ring-2 focus:ring-[#C5A059] bg-white dark:bg-[#1C181C] text-xs md:text-sm shadow-xs" />
+          <button @click="showFilter = !showFilter" class="w-10 h-10 bg-white dark:bg-[#1C181C] border border-stone-200/80 dark:border-stone-800 rounded-full flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-800 transition btn-press cursor-pointer shadow-xs" title="Smart Filter">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-stone-600 dark:text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
           </button>
           
           <!-- Smart Filter Dropdown -->
-          <div v-if="showFilter" class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-[#1A1D26] rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 z-50 p-4 animate-fade-in">
-            <h3 class="text-sm font-bold border-b border-gray-200 dark:border-gray-800 pb-2 mb-3 text-themeGold">Smart Filter</h3>
+          <div v-if="showFilter" class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-[#1C181C] rounded-2xl shadow-xl border border-stone-200/80 dark:border-stone-800 z-50 p-4 animate-fade-in">
+            <h3 class="text-sm font-bold border-b border-stone-100 dark:border-stone-800 pb-2 mb-3 text-[#C5A059]">Smart Filter</h3>
             <div class="space-y-3 text-left">
               <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">Category</label>
-                <select v-model="filterCategory" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-[#252936] focus:outline-none">
+                <label class="block text-xs font-bold text-stone-500 mb-1">Category</label>
+                <select v-model="filterCategory" class="w-full p-2 border border-stone-200 dark:border-stone-700 rounded-xl text-sm bg-white dark:bg-[#252026] focus:outline-none">
                   <option value="">All Categories</option>
                   <option v-for="cat in categoriesList" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">Stock Status</label>
-                <select v-model="filterStock" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                <label class="block text-xs font-bold text-stone-500 mb-1">Stock Status</label>
+                <select v-model="filterStock" class="w-full p-2 border border-stone-200 dark:border-stone-700 rounded-xl text-sm bg-white dark:bg-[#252026] focus:outline-none">
                   <option value="">All</option>
                   <option value="low">Low Stock</option>
                   <option value="out">Out of Stock</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1">Product Type</label>
-                <select v-model="filterType" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
+                <label class="block text-xs font-bold text-stone-500 mb-1">Product Type</label>
+                <select v-model="filterType" class="w-full p-2 border border-stone-200 dark:border-stone-700 rounded-xl text-sm bg-white dark:bg-[#252026] focus:outline-none">
                   <option value="">All Types</option>
                   <option value="0">Physical Product</option>
                   <option value="1">Service</option>
                 </select>
               </div>
               <div class="pt-2">
-                <button @click="showFilter = false" class="w-full bg-themeRed text-white py-1.5 rounded text-sm font-bold hover:bg-red-800 transition">Apply Filters</button>
+                <button @click="showFilter = false" class="w-full bg-[#7A1A24] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#94222E] transition btn-press">Apply Filters</button>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Action -->
+        <!-- Action Buttons -->
         <div class="flex flex-wrap gap-2">
-          <button @click="handleResetAll" class="px-3 py-2 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 font-bold shadow-sm transition flex items-center justify-center gap-1.5 text-xs cursor-pointer" title="Clean and wipe all data to start fresh">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          <button @click="handleResetAll" class="px-3.5 py-2 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-900/60 rounded-full hover:bg-rose-100 font-bold shadow-xs transition-all btn-press flex items-center justify-center gap-1.5 text-xs cursor-pointer" title="Clean and wipe all data to start fresh">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             <span>Clean Data</span>
           </button>
 
-          <button @click="handleExport" class="flex-1 sm:flex-none px-4 py-2 bg-white dark:bg-themeDark text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-bold shadow-sm transition flex items-center justify-center gap-2" title="Export to Excel">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-themeGold" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-            <span class="hidden md:inline">Export</span>
+          <button @click="handleExport" class="flex-1 sm:flex-none px-4 py-2 bg-white dark:bg-[#1C181C] text-stone-700 dark:text-stone-200 border border-stone-200/80 dark:border-stone-800 rounded-full hover:bg-stone-50 font-bold shadow-xs transition-all btn-press flex items-center justify-center gap-1.5 text-xs cursor-pointer" title="Export to Excel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-[#C5A059]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            <span>Export</span>
           </button>
           
-          <label class="flex-1 sm:flex-none px-4 py-2 bg-white dark:bg-themeDark text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-bold shadow-sm transition flex items-center justify-center gap-2 cursor-pointer" title="Import from Excel">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-themeGold hover:text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-            <span class="hidden md:inline">Import</span>
+          <label class="flex-1 sm:flex-none px-4 py-2 bg-white dark:bg-[#1C181C] text-stone-700 dark:text-stone-200 border border-stone-200/80 dark:border-stone-800 rounded-full hover:bg-stone-50 font-bold shadow-xs transition-all btn-press flex items-center justify-center gap-1.5 text-xs cursor-pointer" title="Import from Excel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-[#C5A059]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+            <span>Import</span>
             <input type="file" class="hidden" accept=".xlsx, .xls, .csv" @change="handleImport" />
           </label>
 
-          <button v-if="selectedProductsToPrint.length > 0" @click="showQrModal = true" class="flex-1 sm:flex-none px-4 py-2 bg-themeGold hover:bg-yellow-600 text-gray-900 rounded-lg font-bold shadow-md transition flex items-center justify-center gap-2 animate-fade-in whitespace-nowrap cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-            Print {{ selectedProductsToPrint.length }} Labels
+          <button v-if="selectedProductsToPrint.length > 0" @click="showQrModal = true" class="flex-1 sm:flex-none px-4 py-2 bg-[#C5A059] hover:bg-[#B58739] text-stone-900 rounded-full font-bold shadow-md transition-all btn-press flex items-center justify-center gap-1.5 text-xs whitespace-nowrap cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+            <span>Print {{ selectedProductsToPrint.length }} Labels</span>
           </button>
 
-          <NuxtLink to="/inventory/add" class="flex-1 sm:flex-none bg-themeRed hover:bg-red-800 text-white px-4 md:px-6 py-2 rounded-lg font-bold shadow-md transition border border-red-900 whitespace-nowrap text-center flex items-center justify-center cursor-pointer">
-            + Add Product
+          <NuxtLink to="/inventory/add" class="flex-1 sm:flex-none bg-[#7A1A24] hover:bg-[#94222E] text-white px-5 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all btn-press whitespace-nowrap text-xs text-center flex items-center justify-center gap-1.5 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+            <span>Add Product</span>
           </NuxtLink>
         </div>
       </div>
     </div>
 
-    <div class="bg-white dark:bg-[#1A1D26] rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden">
+    <!-- Table Card -->
+    <div class="bg-white dark:bg-[#1C181C] rounded-3xl shadow-xs border border-stone-200/70 dark:border-stone-800/80 flex-grow overflow-hidden flex flex-col">
       <div class="overflow-x-auto h-full">
         <table class="w-full text-left border-collapse whitespace-nowrap">
           <thead class="bg-white dark:bg-[#1A1D26] text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
             <tr>
               <th class="p-4 w-10">
-                <input type="checkbox" @change="toggleAll" :checked="selectedProductsToPrint.length === filteredProducts.length && filteredProducts.length > 0" class="w-4 h-4 rounded text-themeRed border-gray-300 focus:ring-themeRed" />
+                <input 
+                  type="checkbox" 
+                  @change="toggleAll" 
+                  :checked="selectedProductsToPrint.length === filteredProducts.length && filteredProducts.length > 0" 
+                  class="w-4 h-4 rounded text-themeRed border-gray-300 focus:ring-themeRed" 
+                  aria-label="Select all products"
+                />
               </th>
               <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Image</th>
-              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Product Details</th>
-              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Code / Barcode</th>
+              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Product Name</th>
+              <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Product Code (SKU)</th>
               <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Category</th>
               <th class="p-3 md:p-4 font-bold uppercase tracking-wider text-xs">Color</th>
               <th class="p-4 font-bold uppercase tracking-wider text-xs">Cost (In)</th>
@@ -109,14 +117,21 @@
             </tr>
             <tr v-for="product in filteredProducts" :key="product.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-900/10 transition" :class="{'bg-red-50/50 dark:bg-red-900/20': selectedProductsToPrint.some(p => p.id === product.id)}">
               <td class="p-4">
-                <input type="checkbox" :value="product" v-model="selectedProductsToPrint" class="w-4 h-4 rounded text-themeRed border-gray-300 focus:ring-themeRed" />
+                <input 
+                  type="checkbox" 
+                  :value="product" 
+                  v-model="selectedProductsToPrint" 
+                  class="w-4 h-4 rounded text-themeRed border-gray-300 focus:ring-themeRed" 
+                  :aria-label="'Select ' + product.name + ' for printing'"
+                />
               </td>
               <td class="p-4">
-                <div v-if="product.image" class="w-12 h-12 rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+                <div v-if="product.image" class="w-12 h-12 rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden shadow-2xs">
                   <img :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
                 </div>
-                <div v-else class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600 flex items-center justify-center text-xs font-bold text-gray-400">
-                  IMG
+                <div v-else class="w-12 h-12 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center shadow-2xs relative overflow-hidden" :style="{ backgroundColor: mockColors[product.color_id]?.code ? `${mockColors[product.color_id]?.code}22` : '#FAF7F2' }">
+                  <span class="w-4 h-4 rounded-full border border-black/10 shadow-2xs" :style="{ backgroundColor: mockColors[product.color_id]?.code || product.colorCode || '#C5A059' }"></span>
+                  <span class="text-[9px] font-mono font-bold text-gray-500 dark:text-gray-400 mt-0.5 uppercase tracking-wider">{{ (product.code || 'PK').slice(0, 3) }}</span>
                 </div>
               </td>
               <td class="p-4">
@@ -125,9 +140,9 @@
                   <span v-if="product.is_service" class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Service</span>
                 </div>
               </td>
-              <td class="p-4 font-mono text-sm text-gray-500 dark:text-gray-400">
-                <div>{{ product.code }}</div>
-                <div class="text-xs text-gray-400">{{ mockBarcodeTypes[product.barcode_type_id]?.name }}</div>
+              <td class="p-4 font-mono text-sm font-bold text-gray-700 dark:text-gray-300">
+                <div class="inline-block px-2 py-0.5 bg-gray-100 dark:bg-[#252936] rounded border border-gray-200 dark:border-gray-700 text-xs">{{ product.code }}</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">{{ mockBarcodeTypes[product.barcode_type_id]?.name }}</div>
               </td>
               <td class="p-4 text-sm text-gray-600 dark:text-gray-300">
                 <span class="bg-gray-100 dark:bg-[#252936] border border-gray-200 dark:border-gray-700 px-2 py-1 rounded text-xs">

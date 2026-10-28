@@ -46,9 +46,10 @@
               <button 
                 type="button" 
                 @click="generateRandomSku" 
-                class="text-xs text-themeGold hover:underline font-bold cursor-pointer"
+                class="text-xs text-themeGold hover:underline font-bold cursor-pointer inline-flex items-center gap-1"
               >
-                ⚡ Auto Generate
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <span>Auto Generate</span>
               </button>
             </div>
             <input 
@@ -167,7 +168,82 @@
             <div class="w-10 h-10 rounded-full border border-gray-300 shadow-sm" :style="{ backgroundColor: selectedColorObject.code }"></div>
             <div>
               <p class="text-sm font-bold">{{ selectedColorObject.name }}</p>
+              <p class="text-xs text-gray-500">{{ selectedColorObject.code }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- Color & Swatches -->
+        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Fabric Swatch & Color</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-bold mb-2">Color Swatch</label>
+            <select 
+              v-model="form.color_id" 
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-themeGold dark:bg-themeDark"
+            >
+              <option value="">No Color / Default</option>
+              <option v-for="color in colors" :key="color.id" :value="color.id">
+                {{ color.name }} ({{ color.code }})
+              </option>
+            </select>
+          </div>
+          <div v-if="selectedColorObject" class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="w-10 h-10 rounded-full border border-gray-300 shadow-sm" :style="{ backgroundColor: selectedColorObject.code }"></div>
+            <div>
+              <p class="text-sm font-bold">{{ selectedColorObject.name }}</p>
               <p class="text-xs text-gray-500 font-mono">{{ selectedColorObject.code }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Photo Upload -->
+        <h2 class="text-xl font-bold text-themeGold border-b border-gray-200 dark:border-gray-800 pb-2 mt-8">Product Picture</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <div>
+            <label class="block text-sm font-bold mb-2">Change Fabric Photo</label>
+            <div 
+              class="border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-themeGold dark:hover:border-themeGold rounded-2xl p-6 text-center transition cursor-pointer relative bg-gray-50/50 dark:bg-gray-900/30"
+              @dragover.prevent
+              @drop.prevent="handleFileDrop"
+            >
+              <input 
+                type="file" 
+                ref="fileInputRef"
+                accept="image/*" 
+                class="hidden" 
+                @change="handleFileUpload" 
+              />
+              <div @click="$refs.fileInputRef?.click()" class="space-y-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <div class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                  Click to choose new photo or drag and drop
+                </div>
+                <p class="text-xs text-gray-400">PNG, JPG, WEBP up to 5MB</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image Preview -->
+          <div>
+            <label class="block text-sm font-bold mb-2">Current Photo Preview</label>
+            <div v-if="form.image" class="relative rounded-2xl overflow-hidden border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 aspect-[4/3] max-w-xs shadow-sm">
+              <img :src="form.image" alt="Product Photo" class="w-full h-full object-cover" />
+              <button 
+                type="button" 
+                @click="form.image = ''" 
+                class="absolute top-2 right-2 p-1.5 rounded-full bg-black/70 hover:bg-red-600 text-white transition shadow-sm cursor-pointer"
+                title="Remove Photo"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div v-else class="rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 aspect-[4/3] max-w-xs flex flex-col items-center justify-center text-gray-400 text-xs">
+              <span class="text-sm font-semibold">No Photo Uploaded</span>
+              <span class="text-[10px] text-gray-500 mt-1">Default silk fabric swatch texture is shown</span>
             </div>
           </div>
         </div>
@@ -196,6 +272,7 @@ const router = useRouter()
 const route = useRoute()
 const { products, categories, units, colors, updateProduct } = usePosState()
 const { showAlert } = useUiAlert()
+const fileInputRef = ref(null)
 
 const productId = computed(() => Number(route.query.id))
 
@@ -211,8 +288,33 @@ const form = ref({
   cost: 0,
   price: 0,
   alert_quantity: 5,
-  color_id: ''
+  color_id: '',
+  image: ''
 })
+
+const handleFileUpload = (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  processImageFile(file)
+}
+
+const handleFileDrop = (e) => {
+  const file = e.dataTransfer?.files?.[0]
+  if (!file) return
+  processImageFile(file)
+}
+
+const processImageFile = (file) => {
+  if (!file.type.startsWith('image/')) {
+    showAlert("Please upload a valid image file", "Invalid File", "warning")
+    return
+  }
+  const reader = new FileReader()
+  reader.onload = (event) => {
+    form.value.image = event.target?.result
+  }
+  reader.readAsDataURL(file)
+}
 
 const selectedColorObject = computed(() => {
   if (!form.value.color_id) return null
@@ -220,7 +322,7 @@ const selectedColorObject = computed(() => {
 })
 
 const generateRandomSku = () => {
-  form.value.code = `PRD-${Math.floor(1000 + Math.random() * 9000)}`
+  form.value.code = `PK-${Math.floor(100 + Math.random() * 900)}`
 }
 
 onMounted(() => {
@@ -238,10 +340,10 @@ onMounted(() => {
       cost: product.cost || 0,
       price: product.price || 0,
       alert_quantity: product.alert_quantity || 5,
-      color_id: product.color_id || ''
+      color_id: product.color_id || '',
+      image: product.image || ''
     }
   } else if (products.value.length > 0) {
-    // Fallback if no query id
     const p = products.value[0]
     form.value = {
       name: p.name,
@@ -255,7 +357,8 @@ onMounted(() => {
       cost: p.cost || 0,
       price: p.price || 0,
       alert_quantity: p.alert_quantity || 5,
-      color_id: p.color_id || ''
+      color_id: p.color_id || '',
+      image: p.image || ''
     }
   }
 })
@@ -281,7 +384,8 @@ const submitForm = () => {
     is_service: form.value.is_service ? 1 : 0,
     color_id: selectedClr ? selectedClr.id : null,
     colorName: selectedClr ? selectedClr.name : '',
-    colorCode: selectedClr ? selectedClr.code : ''
+    colorCode: selectedClr ? selectedClr.code : '',
+    image: form.value.image || ''
   }
 
   updateProduct(productId.value, updated)

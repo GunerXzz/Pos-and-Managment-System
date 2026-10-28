@@ -10,6 +10,7 @@ export default defineI18nConfig(() => ({
       units: 'Units',
       adjustments: 'Adjustments',
       sales: 'Sales',
+      sales_list: 'Sales Transactions',
       users: 'Users',
       colors: 'Colors',
       roles_groups: 'Roles & Groups',
@@ -18,7 +19,9 @@ export default defineI18nConfig(() => ({
       total: 'Total',
       pay_now: 'Complete Sale',
       logged_in: 'Logged in as:',
-      reports: 'Reports'
+      reports: 'Reports',
+      all_collections: 'All Collections',
+      add_product: '+ Add Product'
     },
     km: {
       dashboard: 'ផ្ទាំងគ្រប់គ្រង',
@@ -28,6 +31,7 @@ export default defineI18nConfig(() => ({
       units: 'ខ្នាត',
       adjustments: 'ការកែតម្រូវ',
       sales: 'ការលក់',
+      sales_list: 'ប្រតិបត្តិការលក់',
       users: 'អ្នកប្រើប្រាស់',
       colors: 'ពណ៌',
       roles_groups: 'តួនាទី និងក្រុម',
@@ -36,7 +40,9 @@ export default defineI18nConfig(() => ({
       total: 'សរុប',
       pay_now: 'បញ្ជាក់ការលក់',
       logged_in: 'ចូលគណនីជា៖',
-      reports: 'របាយការណ៍'
+      reports: 'របាយការណ៍',
+      all_collections: 'ការប្រមូលទាំងអស់',
+      add_product: '+ បន្ថែមទំនិញ'
     },
     zh: {
       dashboard: '仪表板',
@@ -46,6 +52,7 @@ export default defineI18nConfig(() => ({
       units: '单位',
       adjustments: '调整',
       sales: '销售',
+      sales_list: '销售明细',
       users: '用户',
       colors: '颜色',
       roles_groups: '角色与权限组',
@@ -54,7 +61,9 @@ export default defineI18nConfig(() => ({
       total: '总计',
       pay_now: '完成销售',
       logged_in: '当前登录：',
-      reports: '报表'
+      reports: '报表',
+      all_collections: '全部集合',
+      add_product: '+ 新增商品'
     }
   }
 }))

@@ -9,7 +9,7 @@
         </NuxtLink>
         <div>
           <h1 class="text-3xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">Product Details</h1>
-          <p class="text-xs md:text-sm text-gray-500 mt-1">Viewing information for {{ currentProduct?.code || 'SKU' }}</p>
+          <p class="text-xs md:text-sm text-gray-500 mt-1">Viewing product specifications for {{ currentProduct?.name }} (SKU: {{ currentProduct?.code || 'PK-000' }})</p>
         </div>
       </div>
       <NuxtLink :to="'/inventory/edit?id=' + currentProduct?.id" class="bg-themeGold hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-bold shadow-md transition inline-flex items-center gap-2">
@@ -23,12 +23,14 @@
         
         <!-- Image & Barcode -->
         <div class="w-full md:w-1/3 flex flex-col items-center border-r-0 md:border-r border-gray-200 dark:border-gray-800 pr-0 md:pr-8">
-          <div v-if="currentProduct.image" class="w-48 h-48 rounded-xl overflow-hidden border border-gray-300 shadow-sm mb-6">
+          <div v-if="currentProduct.image" class="w-48 h-48 rounded-xl overflow-hidden border border-gray-300 dark:border-gray-700 shadow-sm mb-6">
             <img :src="currentProduct.image" :alt="currentProduct.name" class="w-full h-full object-cover" />
           </div>
-          <div v-else class="w-48 h-48 rounded-xl bg-gray-100 dark:bg-[#1A1D26] border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-gray-400 mb-6 shadow-sm">
-            <span class="text-4xl mb-2">🧵</span>
-            <span class="text-xs font-bold uppercase tracking-wider">Fabric Swatch</span>
+          <div v-else class="w-48 h-48 rounded-xl bg-stone-50 dark:bg-[#1A1D26] border border-stone-200 dark:border-gray-700 flex flex-col items-center justify-center mb-6 shadow-sm relative overflow-hidden" :style="{ backgroundColor: currentProduct.colorCode ? `${currentProduct.colorCode}22` : '#FAF7F2' }">
+            <div class="w-16 h-16 rounded-full border border-black/10 shadow-sm flex items-center justify-center font-serif font-black text-sm text-white" :style="{ backgroundColor: currentProduct.colorCode || '#C5A059' }">
+              {{ (currentProduct.code || 'PK').slice(0, 3) }}
+            </div>
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-600 dark:text-stone-300 mt-2">{{ currentProduct.colorName || 'Silk Swatch' }}</span>
           </div>
           
           <div class="w-full text-center p-4 bg-gray-50 dark:bg-[#252936] rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
@@ -115,7 +117,7 @@
           <div class="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-sm">
             <span class="text-gray-500">POS Fast-Pin Status:</span>
             <span :class="currentProduct.isPinned ? 'text-emerald-500 font-bold' : 'text-gray-400 font-medium'">
-              {{ currentProduct.isPinned ? '★ Pinned to POS Catalog Top' : 'Standard Grid Order' }}
+              {{ currentProduct.isPinned ? 'Pinned to POS Catalog Top' : 'Standard Grid Order' }}
             </span>
           </div>
         </div>

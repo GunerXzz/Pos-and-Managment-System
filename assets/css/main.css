@@ -2,13 +2,84 @@
 @config "../../tailwind.config.js";
 
 :root {
-  --surface-canvas: #0F1117;
-  --surface-card: #1A1D26;
-  --surface-input: #252936;
+  --surface-canvas: #131114;
+  --surface-card: #1C181C;
+  --surface-input: #262126;
 }
 
 @layer base {
   body {
-    @apply bg-themeWhite dark:bg-[#0F1117] text-gray-900 dark:text-gray-100 transition-colors duration-300;
+    @apply bg-[#F6F3EE] dark:bg-[#121013] text-stone-900 dark:text-stone-100 font-sans transition-colors duration-300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
+
+  /* Optimize line height for Khmer text elements to prevent subscript clipping */
+  :lang(km), .font-khmer {
+    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', 'Plus Jakarta Sans', system-ui, sans-serif;
+    line-height: 1.55;
+  }
+
+  .font-moul {
+    font-family: 'Moul', cursive, 'Kantumruy Pro', serif;
+  }
+
+  .font-koulen {
+    font-family: 'Koulen', cursive, 'Kantumruy Pro', sans-serif;
+  }
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 150, 140, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 150, 140, 0.5);
+}
+
+/* Modern Card Hover & Press Effects */
+.card-hover {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+}
+.card-hover:active {
+  transform: scale(0.985);
+}
+
+/* Button & Pill Interactive Press */
+.btn-press {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), filter 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-press:hover {
+  filter: brightness(1.03);
+}
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+/* Subtle Pulsing Animation */
+@keyframes softPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.75;
+  }
+}
+
+.pulse-dot {
+  animation: softPulse 2.5s infinite ease-in-out;
 }

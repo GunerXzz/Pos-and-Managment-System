@@ -1,127 +1,179 @@
 <template>
-  <div class="p-4 md:p-8 h-full flex flex-col bg-themeWhite dark:bg-themeDark text-gray-900 dark:text-gray-100">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 border-b-2 border-themeGold pb-4 gap-4">
+  <div class="p-4 md:p-8 space-y-6">
+    <!-- Header with Breadcrumbs & Action -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-themeRed dark:text-red-500 uppercase tracking-widest">{{ $t('reports') || 'Reports' }}</h1>
-        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">Manage and export system reports</p>
-      </div>
-      <div class="flex relative w-full md:w-auto gap-2 md:gap-4">
-        <button @click="showFilter = !showFilter" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Smart Filter">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-        </button>
-
-        <!-- Smart Filter Dropdown -->
-        <div v-if="showFilter" class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-themeDark rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 z-50 p-4 animate-fade-in">
-          <h3 class="text-sm font-bold border-b border-gray-200 dark:border-gray-800 pb-2 mb-3 text-themeGold">Smart Filter</h3>
-          <div class="space-y-3 text-left">
-            <div>
-              <label class="block text-xs font-bold text-gray-500 mb-1">Report Type</label>
-              <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
-                <option value="">All Types</option>
-                <option value="sales">Sales Report</option>
-                <option value="inventory">Inventory Report</option>
-                <option value="adjustments">Adjustments Report</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-500 mb-1">Date Range</label>
-              <select class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 focus:outline-none">
-                <option value="">All Time</option>
-                <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-              </select>
-            </div>
-            <div class="pt-2">
-              <button @click="showFilter = false" class="w-full bg-themeRed text-white py-1.5 rounded text-sm font-bold hover:bg-red-800 transition">Apply Filters</button>
-            </div>
-          </div>
+        <div class="flex items-center gap-2 text-xs text-stone-400 mb-1">
+          <span>Analytics</span>
+          <span>/</span>
+          <span class="text-stone-700 dark:text-stone-300 font-medium">Reports</span>
         </div>
+        <h1 class="text-2xl sm:text-3xl font-serif font-black tracking-tight text-stone-900 dark:text-stone-100">
+          Analytics & Reports
+        </h1>
+        <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
+          Generate live CSV exports of store sales, fabric inventory, and stock adjustments
+        </p>
+      </div>
 
-        <button @click="showGenerateModal = true" class="flex-1 sm:flex-none bg-themeRed hover:bg-red-800 text-white px-4 md:px-6 py-2 rounded-lg font-bold shadow-md transition border border-red-900 whitespace-nowrap text-center flex items-center justify-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      <div class="flex items-center gap-2">
+        <button 
+          @click="showGenerateModal = true" 
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#7A1A24] hover:bg-[#94222E] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all btn-press cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Generate Report
+          <span>Generate Real Report</span>
         </button>
       </div>
     </div>
 
-    <div class="bg-white dark:bg-themeDark rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 flex-grow overflow-hidden flex flex-col">
-      <div class="overflow-x-auto flex-grow h-full">
+    <!-- Main Card Container -->
+    <div class="bg-white dark:bg-[#1A181C] rounded-3xl border border-stone-200/70 dark:border-stone-800/80 shadow-xs overflow-hidden">
+      <!-- Toolbar & Title -->
+      <div class="p-4 sm:p-5 border-b border-stone-200/70 dark:border-stone-800/80 flex items-center justify-between">
+        <div>
+          <h2 class="font-serif font-bold text-sm text-stone-900 dark:text-stone-100">
+            Export History & Generated Documents
+          </h2>
+          <p class="text-[11px] text-stone-400">Click download to export current reactive data directly to CSV</p>
+        </div>
+        <span class="text-xs font-mono text-stone-400">
+          {{ mockReports.length }} Archives Available
+        </span>
+      </div>
+
+      <!-- Table View -->
+      <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse whitespace-nowrap">
-          <thead class="bg-gray-50 dark:bg-gray-900/50 text-gray-500 border-b-2 border-gray-100 dark:border-gray-800 sticky top-0 z-10">
+          <thead class="bg-stone-50/70 dark:bg-stone-900/40 text-stone-500 dark:text-stone-400 border-b border-stone-200/60 dark:border-stone-800/60">
             <tr>
-              <th class="p-4 font-bold uppercase tracking-wider text-xs">ID</th>
-              <th class="p-4 font-bold uppercase tracking-wider text-xs">Report Type</th>
-              <th class="p-4 font-bold uppercase tracking-wider text-xs">Generated By</th>
-              <th class="p-4 font-bold uppercase tracking-wider text-xs">Generated At</th>
-              <th class="p-4 font-bold uppercase tracking-wider text-xs text-right">Actions</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px] w-20">ID</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px]">Report Type</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px]">Generated By</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px]">Generated Date</th>
+              <th class="py-3.5 px-5 font-bold uppercase tracking-wider text-[11px] text-right">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="report in mockReports" :key="report.id" class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
-              <td class="p-4 font-mono text-sm text-gray-500">#{{ report.id }}</td>
-              <td class="p-4 font-bold text-md text-gray-800 dark:text-gray-200">
-                {{ getReportTypeName(report.type_id) }}
+          <tbody class="divide-y divide-stone-100 dark:divide-stone-800/60">
+            <tr 
+              v-for="report in mockReports" 
+              :key="report.id" 
+              class="hover:bg-stone-50/80 dark:hover:bg-stone-800/40 transition-colors"
+            >
+              <td class="py-3.5 px-5 font-mono text-xs text-stone-400">
+                #{{ report.id }}
               </td>
-              <td class="p-4 text-sm text-gray-600 dark:text-gray-300">
+              <td class="py-3.5 px-5 font-bold text-xs sm:text-sm text-stone-800 dark:text-stone-100">
                 <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-full bg-themeGold flex items-center justify-center text-white font-bold text-xs">
-                    {{ getUserInitials(report.generated_by) }}
+                  <div class="w-7 h-7 rounded-xl bg-[#C5A059]/15 text-[#C5A059] flex items-center justify-center font-bold text-xs">
+                    CSV
                   </div>
-                  {{ getUserName(report.generated_by) }}
+                  <span>{{ getReportTypeName(report.type_id) }}</span>
                 </div>
               </td>
-              <td class="p-4 text-sm text-gray-500">
+              <td class="py-3.5 px-5 text-xs text-stone-600 dark:text-stone-300">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-[#7A1A24] text-white flex items-center justify-center text-[10px] font-bold">
+                    {{ getUserInitials(report.generated_by) }}
+                  </div>
+                  <span>{{ getUserName(report.generated_by) }}</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-5 text-xs text-stone-500">
                 {{ formatDate(report.generated_at) }}
               </td>
-              <td class="p-4 text-right">
-                <button @click="downloadReport(report)" class="text-themeGold hover:text-yellow-600 font-bold uppercase text-sm transition flex items-center justify-end gap-1 ml-auto">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <td class="py-3.5 px-5 text-right">
+                <button 
+                  @click="downloadReport(report)" 
+                  class="px-3.5 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-[#C5A059] hover:text-stone-950 text-stone-700 dark:text-stone-300 text-xs font-bold transition-all btn-press inline-flex items-center gap-1.5 cursor-pointer ml-auto"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  Download
+                  <span>Download CSV</span>
                 </button>
               </td>
-            </tr>
-            <tr v-if="mockReports.length === 0">
-              <td colspan="5" class="p-8 text-center text-gray-500">No reports generated yet.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
     <!-- Generate Report Modal -->
-    <div v-if="showGenerateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div class="bg-white dark:bg-themeDark rounded-xl shadow-2xl w-full max-w-md overflow-hidden p-5 border border-gray-200 dark:border-gray-800">
-        <h3 class="text-xl font-bold mb-4 dark:text-white border-b border-gray-200 dark:border-gray-800 pb-2">Generate New Report</h3>
+    <div 
+      v-if="showGenerateModal" 
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"
+      @click.self="showGenerateModal = false"
+    >
+      <div class="bg-white dark:bg-[#1A181C] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-6 border border-stone-200/70 dark:border-stone-800/80 space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-200/70 dark:border-stone-800/80 pb-3">
+          <h3 class="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">
+            Generate Store Report
+          </h3>
+          <button 
+            type="button" 
+            @click="showGenerateModal = false" 
+            class="text-stone-400 hover:text-stone-600 cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
         
-        <div class="space-y-4 mb-6">
+        <div class="space-y-4">
           <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Select Report Type <span class="text-themeRed">*</span></label>
-            <select v-model="generateForm.type_id" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:border-themeRed">
-              <option disabled value="">-- Choose a report --</option>
-              <option v-for="type in mockReportTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
+            <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5">
+              Select Report Dataset <span class="text-[#7A1A24]">*</span>
+            </label>
+            <select 
+              v-model="generateForm.type_id" 
+              class="w-full p-2.5 text-xs rounded-xl border border-stone-200/80 dark:border-stone-700/80 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50"
+            >
+              <option disabled value="">-- Choose a dataset to export --</option>
+              <option v-for="type in mockReportTypes" :key="type.id" :value="type.id">
+                {{ type.name }} (Live Data)
+              </option>
             </select>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
-              <input type="date" v-model="generateForm.start_date" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:border-themeRed" />
+              <label class="block text-stone-500 font-bold mb-1">Start Date</label>
+              <input 
+                type="date" 
+                v-model="generateForm.start_date" 
+                class="w-full p-2 rounded-xl border border-stone-200/80 dark:border-stone-700/80 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 focus:outline-none" 
+              />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">End Date</label>
-              <input type="date" v-model="generateForm.end_date" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:border-themeRed" />
+              <label class="block text-stone-500 font-bold mb-1">End Date</label>
+              <input 
+                type="date" 
+                v-model="generateForm.end_date" 
+                class="w-full p-2 rounded-xl border border-stone-200/80 dark:border-stone-700/80 bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 focus:outline-none" 
+              />
             </div>
           </div>
         </div>
 
-        <div class="flex gap-3 justify-end">
-          <button @click="showGenerateModal = false" class="px-4 py-2 text-gray-600 dark:text-gray-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition">Cancel</button>
-          <button @click="handleGenerateReport" :disabled="!generateForm.type_id" class="px-6 py-2 bg-themeRed hover:bg-red-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded font-bold transition">
-            Generate & Download
+        <div class="flex gap-2 justify-end pt-3 border-t border-stone-200/70 dark:border-stone-800/80">
+          <button 
+            type="button" 
+            @click="showGenerateModal = false" 
+            class="px-4 py-2 text-stone-500 text-xs font-bold hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            @click="handleGenerateReport" 
+            :disabled="!generateForm.type_id" 
+            class="px-5 py-2 bg-[#7A1A24] hover:bg-[#94222E] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold transition btn-press cursor-pointer shadow-md"
+          >
+            Generate & Download CSV
           </button>
         </div>
       </div>
@@ -131,8 +183,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { usePosState } from '~/composables/usePosState'
+import { useUiAlert } from '~/composables/useUiAlert'
 
-const showFilter = ref(false)
+const { sales, products, adjustments } = usePosState()
 const showGenerateModal = ref(false)
 
 const generateForm = ref({
@@ -142,9 +196,9 @@ const generateForm = ref({
 })
 
 const mockReportTypes = {
-  1: { id: 1, name: 'Sales Summary' },
-  2: { id: 2, name: 'Inventory Status' },
-  3: { id: 3, name: 'Adjustment Logs' }
+  1: { id: 1, name: 'Sales & Invoices Summary' },
+  2: { id: 2, name: 'Fabric Inventory & Bolt Stock' },
+  3: { id: 3, name: 'Stock Adjustment Audit Logs' }
 }
 
 const mockUsers = {
@@ -152,10 +206,25 @@ const mockUsers = {
   2: { id: 2, name: 'Manager Seng' }
 }
 
-const mockReports = ref([])
+const mockReports = ref([
+  {
+    id: 101,
+    type_id: 1,
+    generated_by: 1,
+    file_path: '/exports/sales_summary.csv',
+    generated_at: new Date(Date.now() - 86400000).toISOString()
+  },
+  {
+    id: 102,
+    type_id: 2,
+    generated_by: 1,
+    file_path: '/exports/inventory_status.csv',
+    generated_at: new Date(Date.now() - 3600000 * 4).toISOString()
+  }
+])
 
-const getReportTypeName = (typeId) => mockReportTypes[typeId]?.name || 'Unknown Report'
-const getUserName = (userId) => mockUsers[userId]?.name || 'Unknown User'
+const getReportTypeName = (typeId) => mockReportTypes[typeId]?.name || 'Custom Report'
+const getUserName = (userId) => mockUsers[userId]?.name || 'Admin User'
 const getUserInitials = (userId) => {
   const name = getUserName(userId)
   return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
@@ -166,46 +235,74 @@ const formatDate = (dateString) => {
   return date.toLocaleString()
 }
 
-const generateMockCSV = (filename) => {
-  const csvContent = "data:text/csv;charset=utf-8,ID,Name,Value\n1,Test Item A,100\n2,Test Item B,250\n"
-  const encodedUri = encodeURI(csvContent)
+const downloadCSV = (filename, csvString) => {
+  const blob = new Blob(["\uFEFF" + csvString], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
-  link.setAttribute("href", encodedUri)
+  link.setAttribute("href", url)
   link.setAttribute("download", filename)
-  document.body.appendChild(link) // Required for FF
+  document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
+const buildRealReportCSV = (typeId) => {
+  if (Number(typeId) === 1) {
+    // Sales Summary
+    const header = "Invoice Ref,Date,Time,Customer,Phone,Cashier,Sale Status,Payment Status,Items Count,Total USD\n"
+    const rows = sales.value.map(s => {
+      const itemsCount = s.items ? s.items.length : 0
+      const total = s.grand_total || s.total || 0
+      return `"${s.reference_no || ''}","${s.date || ''}","${s.time || ''}","${(s.customer_name || '').replace(/"/g, '""')}","${s.customer_phone || ''}","${s.created_by || 'Admin'}","${s.sale_status || 'Completed'}","${s.payment_status || 'Paid'}",${itemsCount},${total.toFixed(2)}`
+    }).join("\n")
+    return header + rows
+  } else if (Number(typeId) === 2) {
+    // Inventory Status
+    const header = "SKU,Product Name,Category ID,Color,Cost USD,Price USD,Stock,Unit,Alert Qty\n"
+    const rows = products.value.map(p => {
+      return `"${p.code || ''}","${(p.name || '').replace(/"/g, '""')}",${p.category_id || 1},"${p.colorName || ''}",${(p.cost || 0).toFixed(2)},${(p.price || 0).toFixed(2)},${p.stock},"${p.unit || 'm'}",${p.alert_quantity || 0}`
+    }).join("\n")
+    return header + rows
+  } else {
+    // Adjustment Logs
+    const header = "Ref No,Date,Product Code,Product Name,Type,Quantity,Unit,Created By\n"
+    const rows = adjustments.value.map(a => {
+      return `"${a.reference_no || ''}","${a.date || ''}","${a.product_code || ''}","${(a.product_name || '').replace(/"/g, '""')}","${a.type}",${a.quantity},"${a.unit || 'm'}","${a.created_by || 'Admin'}"`
+    }).join("\n")
+    return header + rows
+  }
 }
 
 const handleGenerateReport = () => {
-  if (!generateForm.value.type_id) return;
+  if (!generateForm.value.type_id) return
 
   const { showAlert } = useUiAlert()
-  showAlert("Generating and downloading new report...", "Generate Report", "success")
+  const typeId = generateForm.value.type_id
+  showAlert("Generating authentic report from active store data...", "Generate Report", "success")
   
-  // Close modal
-  showGenerateModal.value = false;
+  showGenerateModal.value = false
 
-  // Mock adding it to the history log
   const newReport = {
     id: Math.floor(Math.random() * 1000) + 200,
-    type_id: generateForm.value.type_id,
-    generated_by: 1, // Assume Admin
-    file_path: `/exports/new_report_${Date.now()}.csv`,
+    type_id: typeId,
+    generated_by: 1,
+    file_path: `/exports/report_${typeId}_${Date.now()}.csv`,
     generated_at: new Date().toISOString()
   }
   mockReports.value.unshift(newReport)
 
-  // Actually download a mock file
   setTimeout(() => {
-    generateMockCSV(`report_${generateForm.value.type_id}_${Date.now()}.csv`)
-    // Reset form
+    const csvData = buildRealReportCSV(typeId)
+    const reportName = getReportTypeName(typeId).replace(/\s+/g, '_').toLowerCase()
+    downloadCSV(`${reportName}_${newReport.id}.csv`, csvData)
     generateForm.value = { type_id: '', start_date: '', end_date: '' }
-  }, 1000)
+  }, 600)
 }
 
 const downloadReport = (report) => {
+  const csvData = buildRealReportCSV(report.type_id)
   const reportName = getReportTypeName(report.type_id).replace(/\s+/g, '_').toLowerCase()
-  generateMockCSV(`${reportName}_${report.id}.csv`)
+  downloadCSV(`${reportName}_${report.id}.csv`, csvData)
 }
 </script>

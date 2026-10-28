@@ -8,8 +8,22 @@ export default defineNuxtConfig({
     enabled: true
   },
 
+  app: {
+    head: {
+      title: 'Atelier POS — Boutique Fabric & Tailoring System',
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&family=Koulen&family=Moul&family=Noto+Sans+Khmer:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
+        }
+      ]
+    }
+  },
+
   devServer: {
-    port: 3008
+    port: 3000
   },
 
   modules: [

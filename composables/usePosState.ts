@@ -130,11 +130,191 @@ export interface SystemGroup {
   status: number
 }
 
-// Default Seeds - 100% CLEAN (User will add own data)
-const defaultUnits: Unit[] = []
-const defaultCategories: Category[] = []
-const defaultColors: ColorItem[] = []
-const defaultProducts: Product[] = []
+// Default Seeds - Pidan Khmer Silk authentic catalog
+const defaultUnits: Unit[] = [
+  { id: 1, name: 'Meter', code: 'm' },
+  { id: 2, name: 'Kben', code: 'kben' },
+  { id: 3, name: 'Piece', code: 'pcs' },
+  { id: 4, name: 'Roll', code: 'roll' }
+]
+
+const defaultCategories: Category[] = [
+  { id: 1, code: 'CAT-HOL', name: 'Ikat & Hol Silk', status: 'Active' },
+  { id: 2, code: 'CAT-PIDAN', name: 'Pidan Sacred Silk', status: 'Active' },
+  { id: 3, code: 'CAT-PHAMUNG', name: 'Phamung Brocade', status: 'Active' },
+  { id: 4, code: 'CAT-RAW', name: 'Raw & Organza', status: 'Active' },
+  { id: 5, code: 'CAT-SRV', name: 'Tailoring Services', status: 'Active' }
+]
+
+const defaultColors: ColorItem[] = [
+  { id: 1, name: 'Gold', code: '#E5A93C' },
+  { id: 2, name: 'Crimson', code: '#8B1E2B' },
+  { id: 3, name: 'Natural Ecru', code: '#F4EDE0' },
+  { id: 4, name: 'Emerald', code: '#0F6B42' },
+  { id: 5, name: 'Royal Indigo', code: '#1E2B58' },
+  { id: 6, name: 'Pure Ivory', code: '#FAF7F2' },
+  { id: 7, name: 'Charcoal', code: '#2C282C' }
+]
+
+const defaultProducts: Product[] = [
+  {
+    id: 101,
+    name: 'Golden Pidan Silk / ពិដានសូត្រមាស',
+    code: 'PK-001',
+    price: 45.00,
+    cost: 25.00,
+    unit: 'm',
+    category_id: 2,
+    colorName: 'Gold',
+    colorCode: '#E5A93C',
+    color_id: 1,
+    image: '',
+    isPinned: true,
+    stock: 45.5,
+    alert_quantity: 10,
+    sale_unit: 1
+  },
+  {
+    id: 102,
+    name: 'Ikat Hol Silk Crimson / ហូលសូត្រប្រណិត',
+    code: 'PK-002',
+    price: 38.00,
+    cost: 20.00,
+    unit: 'm',
+    category_id: 1,
+    colorName: 'Crimson',
+    colorCode: '#8B1E2B',
+    color_id: 2,
+    image: '',
+    isPinned: true,
+    stock: 32.0,
+    alert_quantity: 8,
+    sale_unit: 1
+  },
+  {
+    id: 103,
+    name: 'Wild Raw Silk Ecru / សូត្រឆៅធម្មជាតិ',
+    code: 'PK-003',
+    price: 24.00,
+    cost: 12.00,
+    unit: 'm',
+    category_id: 4,
+    colorName: 'Natural Ecru',
+    colorCode: '#F4EDE0',
+    color_id: 3,
+    image: '',
+    isPinned: false,
+    stock: 60.0,
+    alert_quantity: 15,
+    sale_unit: 1
+  },
+  {
+    id: 104,
+    name: 'Sampot Chang Kben Emerald / ចងក្បិនសូត្របៃតង',
+    code: 'PK-004',
+    price: 32.00,
+    cost: 18.00,
+    unit: 'm',
+    category_id: 1,
+    colorName: 'Emerald',
+    colorCode: '#0F6B42',
+    color_id: 4,
+    image: '',
+    isPinned: false,
+    stock: 7.25,
+    alert_quantity: 10,
+    sale_unit: 1
+  },
+  {
+    id: 105,
+    name: 'Phamung Brocade Royal Indigo / ផាមួងសូត្រអំបោះមាស',
+    code: 'PK-005',
+    price: 42.00,
+    cost: 22.00,
+    unit: 'm',
+    category_id: 3,
+    colorName: 'Royal Indigo',
+    colorCode: '#1E2B58',
+    color_id: 5,
+    image: '',
+    isPinned: false,
+    stock: 28.5,
+    alert_quantity: 5,
+    sale_unit: 1
+  },
+  {
+    id: 106,
+    name: 'Silk Organza Ivory / អ័រប៉ង់ហ្សាសូត្រ',
+    code: 'PK-006',
+    price: 28.00,
+    cost: 14.00,
+    unit: 'm',
+    category_id: 4,
+    colorName: 'Pure Ivory',
+    colorCode: '#FAF7F2',
+    color_id: 6,
+    image: '',
+    isPinned: false,
+    stock: 18.75,
+    alert_quantity: 5,
+    sale_unit: 1
+  },
+  {
+    id: 107,
+    name: 'Bespoke Tailoring Service / សេវាកាត់ដេរតាមទំហំ',
+    code: 'SRV-001',
+    price: 25.00,
+    cost: 10.00,
+    unit: 'pcs',
+    category_id: 5,
+    colorName: 'Standard',
+    colorCode: '#2C282C',
+    color_id: 7,
+    image: '',
+    isPinned: false,
+    is_service: 1,
+    stock: 999,
+    alert_quantity: 0,
+    sale_unit: 3
+  }
+]
+
+export interface StoreSettings {
+  nameEn: string
+  nameKh: string
+  tagline: string
+  logo: string
+  address: string
+  phone: string
+  telegram: string
+  taxId: string
+  footerNote: string
+  printFormat: 'a5' | '80mm'
+  cashierName?: string
+  abaAccount1?: string
+  abaName1?: string
+  abaAccount2?: string
+  abaName2?: string
+}
+
+export const defaultStoreSettings: StoreSettings = {
+  nameEn: 'PIDAN KHMER SILK',
+  nameKh: 'ពិដានសូត្រខ្មែរ',
+  tagline: 'Haute Textiles & Custom Tailoring Atelier',
+  logo: '',
+  address: '#18 Samdach Sothearos Blvd, Phnom Penh, Cambodia',
+  phone: '+855 23 999 888',
+  telegram: '@pidansilk',
+  taxId: 'K005-902100456',
+  footerNote: 'Thank you!!! សូមអរគុណ!',
+  printFormat: 'a5',
+  cashierName: 'SEANG Kimpheng',
+  abaAccount1: '168 388 886',
+  abaName1: 'PIDAN KHMER SILK',
+  abaAccount2: '000 594 815',
+  abaName2: 'PIDAN KHMER SILK'
+}
+
 const defaultSales: SaleRecord[] = []
 const defaultAdjustments: Adjustment[] = []
 const defaultUsers: SystemUser[] = []
@@ -143,16 +323,15 @@ const defaultGroups: SystemGroup[] = []
 const getInitialData = <T>(key: string, defaults: T): T => {
   if (import.meta.client) {
     try {
-      // Auto-clean previous dummy data from localStorage
-      if (localStorage.getItem('bpas_clean_reset_done') !== 'yes') {
-        ['units', 'categories', 'colors', 'products', 'sales', 'adjustments', 'users', 'groups'].forEach(k => {
-          localStorage.removeItem(`bpas_${k}`)
-        })
-        localStorage.setItem('bpas_clean_reset_done', 'yes')
-        return defaults
-      }
       const saved = localStorage.getItem(`bpas_${key}`)
-      if (saved) return JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(defaults)) {
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed as T
+        } else if (typeof defaults === 'object' && defaults !== null) {
+          return { ...defaults, ...parsed } as T
+        }
+      }
     } catch (e) {
       console.warn(`Failed to parse localStorage for ${key}`, e)
     }
@@ -161,6 +340,7 @@ const getInitialData = <T>(key: string, defaults: T): T => {
 }
 
 export const usePosState = () => {
+  const storeSettings = useState<StoreSettings>('pos_store_settings', () => getInitialData('store_settings', defaultStoreSettings))
   const units = useState<Unit[]>('pos_shared_units', () => getInitialData('units', defaultUnits))
   const categories = useState<Category[]>('pos_shared_categories', () => getInitialData('categories', defaultCategories))
   const colors = useState<ColorItem[]>('pos_shared_colors', () => getInitialData('colors', defaultColors))
@@ -193,7 +373,36 @@ export const usePosState = () => {
   }
 
   if (import.meta.client) {
+    // Client-side hydration sync: ensure data persisted in localStorage is loaded even after hard page reloads
+    const syncFromStorage = (key: string, stateRef: any) => {
+      try {
+        const saved = localStorage.getItem(`bpas_${key}`)
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(stateRef.value)) {
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              stateRef.value = parsed
+            }
+          } else if (typeof stateRef.value === 'object' && stateRef.value !== null) {
+            stateRef.value = { ...stateRef.value, ...parsed }
+          }
+        }
+      } catch (e) {
+        console.warn(`Failed to sync localStorage for ${key}`, e)
+      }
+    }
+
+    // Immediately hydrate on first client load
+    if (sales.value.length === 0) syncFromStorage('sales', sales)
+    if (adjustments.value.length === 0) syncFromStorage('adjustments', adjustments)
+    syncFromStorage('products', products)
+    syncFromStorage('categories', categories)
+    syncFromStorage('units', units)
+    syncFromStorage('colors', colors)
+    syncFromStorage('store_settings', storeSettings)
+
     // Debounced watchers — reduces GC pressure on low-end tablets (300ms window)
+    watch(storeSettings, debounce((v) => persist('store_settings', v), 200), { deep: true })
     watch(units, debounce((v) => persist('units', v), 300), { deep: true })
     watch(categories, debounce((v) => persist('categories', v), 300), { deep: true })
     watch(colors, debounce((v) => persist('colors', v), 300), { deep: true })
@@ -233,6 +442,7 @@ export const usePosState = () => {
   const updateUnit = (id: number, updated: Partial<Unit>) => {
     const idx = units.value.findIndex(u => u.id === Number(id))
     if (idx !== -1) {
+      
       units.value[idx] = { ...units.value[idx], ...updated }
     }
   }
@@ -296,6 +506,7 @@ export const usePosState = () => {
         product.stock = Math.max(0, Math.round((product.stock - cartItem.quantity) * 100) / 100)
       }
     })
+    persist('products', products.value)
   }
 
   const restockProducts = (items: { id: number; quantity: number }[]) => {
@@ -305,11 +516,13 @@ export const usePosState = () => {
         product.stock = Math.round((product.stock + item.quantity) * 100) / 100
       }
     })
+    persist('products', products.value)
   }
 
   // Sales Methods
   const addSale = (sale: SaleRecord) => {
     sales.value.unshift(sale)
+    persist('sales', sales.value)
   }
 
   const updateSale = (id: number | string, updated: Partial<SaleRecord>) => {
@@ -433,7 +646,14 @@ export const usePosState = () => {
     groups.value = groups.value.filter(g => g.id !== Number(id))
   }
 
+  const updateStoreSettings = (newSettings: Partial<StoreSettings>) => {
+    storeSettings.value = { ...storeSettings.value, ...newSettings }
+    persist('store_settings', storeSettings.value)
+  }
+
   return {
+    storeSettings,
+    updateStoreSettings,
     units,
     categories,
     colors,
